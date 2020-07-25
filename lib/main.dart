@@ -1,3 +1,4 @@
+import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/pages/event_info.dart';
 import 'package:checkmein/pages/event_page.dart';
 import 'package:checkmein/pages/login.dart';
@@ -12,7 +13,7 @@ void main() {
       primaryColor: R.colorPrimary,
       accentColor: R.colorSecondary,
     ),
-    home: LoginPage(),
+    home: CheckinPage(),
     debugShowCheckedModeBanner: false,
   ));
 }

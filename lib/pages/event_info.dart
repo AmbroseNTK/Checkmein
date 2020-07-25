@@ -1,5 +1,6 @@
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
+import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -42,7 +43,12 @@ class _EventInfoPageState extends State<EventInfoPage> {
                 Icons.check_circle,
                 color: R.colorWhite,
               ),
-              onPressed: () {})
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return CheckinPage();
+                }));
+              })
         ],
       ),
       body: Stack(
@@ -75,7 +81,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                           icon: Icon(Icons.insert_invitation),
                           border: const OutlineInputBorder(),
                           hintText: "Type your event's name",
-                          helperText: "Write your name of event"),
+                          helperText: "Write the name of yours event"),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
@@ -93,7 +99,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                           icon: Icon(Icons.location_on),
                           border: const OutlineInputBorder(),
                           hintText: "Type your event's location",
-                          helperText: "Write your location of event"),
+                          helperText: "Write the location of yours event"),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter some text';
@@ -113,7 +119,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                         hintText: "$selectedDate",
                         labelText: "$selectedDate",
                         labelStyle: R.textHeading3L,
-                        helperText: "Write your date of event",
+                        helperText: "Write the date of yours event",
                         suffix: RaisedButton(
                             color: R.colorPrimary,
                             child: Text(
@@ -155,7 +161,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                           icon: Icon(Icons.av_timer),
                           border: const OutlineInputBorder(),
                           hintText: "Type your event's duration (ie. minutes)",
-                          helperText: "Write your duration of event"),
+                          helperText: "Write the duration of yours event"),
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter your duration';
