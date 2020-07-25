@@ -47,7 +47,6 @@ class _EventPageState extends State<EventPage> {
           IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                Navigator.of(context).pop();
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return EventInfoPage();
                 }));
