@@ -65,7 +65,7 @@ class MenuPageState extends State<MenuPage> {
         tooltip: "View Attendee",
       ),
     );
-    if (MediaQuery.of(context).size.width > 768) {
+    if (MediaQuery.of(context).size.width >= 768) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

@@ -2,7 +2,7 @@ import 'package:checkmein/utils.dart';
 import 'package:flutter/material.dart';
 
 class R {
-  static Color colorPrimary = Color(0xff0c7c59);
+  static Color colorPrimary = Color(0xfffa8231);
   static Color colorSecondary = Color(0xfff4ea8e);
   static Color colorWarn = Color(0xfff37121);
   static Color colorError = Color(0xffd92027);

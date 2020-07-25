@@ -1,6 +1,7 @@
 import 'package:checkmein/customs/poly_state.dart';
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/user.dart';
+import 'package:checkmein/pages/event_page.dart';
 import 'package:checkmein/resources.dart';
 import 'package:checkmein/signin_service.dart';
 import 'package:checkmein/utils.dart';
@@ -21,40 +22,51 @@ class LoginPageState extends PolyState<LoginPage> {
     return Scaffold(
       backgroundColor: R.colorPrimary,
       body: Center(
-        child: SizedBox(
-          width: Utils.valueBetween(
-              200, 700, MediaQuery.of(context).size.width * 0.4),
-          height: Utils.valueBetween(
-              200, 700, MediaQuery.of(context).size.height * 0.4),
-          child: Card(
-            elevation: 12,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Checkmein",
-                  style: R.textTitleL,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                RaisedButton.icon(
-                  onPressed: () async {
-                    var user = await login();
-                    print(user.email);
-                    await Database().getEvents();
-                  },
-                  color: R.colorSecondary,
-                  icon: ImageIcon(NetworkImage(
-                      "https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png",
-                      scale: 0.2)),
-                  label: Text("Login", style: R.textNormalBlackForL),
-                )
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/checkmein.png',
+              width: 100.0,
             ),
-          ),
+            Text(
+              "Checkmein",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 60,
+                  fontFamily: 'FiraSans',
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 60,
+            ),
+            RaisedButton.icon(
+              onPressed: () async {
+                var user = await login();
+                if (user != null) {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (buildContext) {
+                    return EventPage();
+                  }));
+                }
+              },
+              color: Colors.white,
+              elevation: 10,
+              hoverColor: R.colorWhite,
+              icon: Image.asset(
+                "assets/images/gicon.png",
+                width: 25,
+              ),
+              label: Text("Login with Google",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontFamily: 'FiraSans',
+                  )),
+            )
+          ],
         ),
       ),
     );
@@ -65,40 +77,51 @@ class LoginPageState extends PolyState<LoginPage> {
     return Scaffold(
       backgroundColor: R.colorPrimary,
       body: Center(
-        child: SizedBox(
-          width: Utils.valueBetween(
-              500, 1500, MediaQuery.of(context).size.width * 0.4),
-          height: Utils.valueBetween(
-              500, 1500, MediaQuery.of(context).size.height * 0.4),
-          child: Card(
-            elevation: 12,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Checkmein",
-                  style: R.textTitleS,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                RaisedButton.icon(
-                  onPressed: () async {
-                    var user = await login();
-                    print(user.email);
-                    await Database().getEvents();
-                  },
-                  color: R.colorSecondary,
-                  icon: ImageIcon(NetworkImage(
-                      "https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png",
-                      scale: 0.2)),
-                  label: Text("Login", style: R.textNormalBlackForS),
-                )
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/checkmein.png',
+              width: 100.0,
             ),
-          ),
+            Text(
+              "Checkmein",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 100,
+                  fontFamily: 'FiraSans',
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 60,
+            ),
+            RaisedButton.icon(
+              onPressed: () async {
+                var user = await login();
+                if (user != null) {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (buildContext) {
+                    return EventPage();
+                  }));
+                }
+              },
+              color: Colors.white,
+              elevation: 10,
+              hoverColor: R.colorWhite,
+              icon: Image.asset(
+                "assets/images/gicon.png",
+                width: 25,
+              ),
+              label: Text("Login with Google",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontFamily: 'FiraSans',
+                  )),
+            )
+          ],
         ),
       ),
     );
@@ -109,40 +132,51 @@ class LoginPageState extends PolyState<LoginPage> {
     return Scaffold(
       backgroundColor: R.colorPrimary,
       body: Center(
-        child: SizedBox(
-          width: Utils.valueBetween(
-              500, 1500, MediaQuery.of(context).size.width * 0.4),
-          height: Utils.valueBetween(
-              500, 1500, MediaQuery.of(context).size.height * 0.4),
-          child: Card(
-            elevation: 12,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Checkmein",
-                  style: R.textTitleL,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                RaisedButton.icon(
-                  onPressed: () async {
-                    var user = await login();
-                    print(user.email);
-                    await Database().getEvents();
-                  },
-                  color: R.colorSecondary,
-                  icon: ImageIcon(NetworkImage(
-                      "https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png",
-                      scale: 0.2)),
-                  label: Text("Login", style: R.textNormalBlackForL),
-                )
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/checkmein.png',
+              width: 100.0,
             ),
-          ),
+            Text(
+              "Checkmein",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 100,
+                  fontFamily: 'FiraSans',
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 60,
+            ),
+            RaisedButton.icon(
+              onPressed: () async {
+                var user = await login();
+                if (user != null) {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (buildContext) {
+                    return EventPage();
+                  }));
+                }
+              },
+              color: Colors.white,
+              elevation: 10,
+              hoverColor: R.colorWhite,
+              icon: Image.asset(
+                "assets/images/gicon.png",
+                width: 25,
+              ),
+              label: Text("Login with Google",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontFamily: 'FiraSans',
+                  )),
+            )
+          ],
         ),
       ),
     );
@@ -153,40 +187,51 @@ class LoginPageState extends PolyState<LoginPage> {
     return Scaffold(
       backgroundColor: R.colorPrimary,
       body: Center(
-        child: SizedBox(
-          width: Utils.valueBetween(
-              500, 1500, MediaQuery.of(context).size.width * 0.4),
-          height: Utils.valueBetween(
-              500, 1500, MediaQuery.of(context).size.height * 0.4),
-          child: Card(
-            elevation: 12,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Checkmein",
-                  style: R.textTitleL,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                RaisedButton.icon(
-                  onPressed: () async {
-                    var user = await login();
-                    print(user.email);
-                    await Database().getEvents();
-                  },
-                  color: R.colorSecondary,
-                  icon: ImageIcon(NetworkImage(
-                      "https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png",
-                      scale: 0.2)),
-                  label: Text("Login", style: R.textHeading1L),
-                )
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/checkmein.png',
+              width: 100.0,
             ),
-          ),
+            Text(
+              "Checkmein",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 100,
+                  fontFamily: 'FiraSans',
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 60,
+            ),
+            RaisedButton.icon(
+              onPressed: () async {
+                var user = await login();
+                if (user != null) {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (buildContext) {
+                    return EventPage();
+                  }));
+                }
+              },
+              color: Colors.white,
+              elevation: 10,
+              hoverColor: R.colorWhite,
+              icon: Image.asset(
+                "assets/images/gicon.png",
+                width: 25,
+              ),
+              label: Text("Login with Google",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontFamily: 'FiraSans',
+                  )),
+            )
+          ],
         ),
       ),
     );

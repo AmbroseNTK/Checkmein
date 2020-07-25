@@ -1,3 +1,4 @@
+import 'package:checkmein/pages/event_info.dart';
 import 'package:checkmein/pages/event_page.dart';
 import 'package:checkmein/pages/login.dart';
 import 'package:checkmein/pages/menu.dart';
