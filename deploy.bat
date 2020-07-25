@@ -1,1 +1,1 @@
-flutter build web && cd build && firebase deploy
+flutter build web && firebase deploy

@@ -49,174 +49,166 @@ class _EventInfoPageState extends State<EventInfoPage> {
         children: [
           Align(
             alignment: Alignment.bottomCenter,
-            child: Positioned(
-              bottom: 0,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: MediaQuery.of(context).size.height * 0.8,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30.0),
-                        topRight: Radius.circular(30.0)),
-                    color: R.colorWhite,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black38,
-                          spreadRadius: 5,
-                          blurRadius: 10),
-                    ]),
-                child: Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      TextFormField(
-                        onFieldSubmitted: (value) => eventName = value.trim(),
-                        maxLength: 50,
-                        keyboardType: TextInputType.text,
-                        cursorColor: R.colorPrimary,
-                        decoration: InputDecoration(
-                            icon: Icon(Icons.insert_invitation),
-                            border: const OutlineInputBorder(),
-                            hintText: "Type your event's name",
-                            helperText: "Write your name of event"),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
-                      sizedBoxspace,
-                      TextFormField(
-                        onFieldSubmitted: (value) =>
-                            eventLocation = value.trim(),
-                        maxLength: 20,
-                        keyboardType: TextInputType.text,
-                        cursorColor: R.colorPrimary,
-                        decoration: InputDecoration(
-                            icon: Icon(Icons.location_on),
-                            border: const OutlineInputBorder(),
-                            hintText: "Type your event's location",
-                            helperText: "Write your location of event"),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
-                      sizedBoxspace,
-                      TextFormField(
-                        maxLength: 20,
-                        keyboardType: TextInputType.datetime,
-                        cursorColor: R.colorPrimary,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.access_alarms),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.height * 0.8,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0)),
+                  color: R.colorWhite,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black38, spreadRadius: 5, blurRadius: 10),
+                  ]),
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextFormField(
+                      onFieldSubmitted: (value) => eventName = value.trim(),
+                      maxLength: 50,
+                      keyboardType: TextInputType.text,
+                      cursorColor: R.colorPrimary,
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.insert_invitation),
                           border: const OutlineInputBorder(),
-                          hintText: "$selectedDate",
-                          labelText: "$selectedDate",
-                          labelStyle: R.textHeading3L,
-                          helperText: "Write your date of event",
-                          suffix: RaisedButton(
-                              color: R.colorPrimary,
+                          hintText: "Type your event's name",
+                          helperText: "Write your name of event"),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    sizedBoxspace,
+                    TextFormField(
+                      onFieldSubmitted: (value) => eventLocation = value.trim(),
+                      maxLength: 20,
+                      keyboardType: TextInputType.text,
+                      cursorColor: R.colorPrimary,
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.location_on),
+                          border: const OutlineInputBorder(),
+                          hintText: "Type your event's location",
+                          helperText: "Write your location of event"),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    sizedBoxspace,
+                    TextFormField(
+                      maxLength: 20,
+                      keyboardType: TextInputType.datetime,
+                      cursorColor: R.colorPrimary,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.access_alarms),
+                        border: const OutlineInputBorder(),
+                        hintText: "$selectedDate",
+                        labelText: "$selectedDate",
+                        labelStyle: R.textHeading3L,
+                        helperText: "Write your date of event",
+                        suffix: RaisedButton(
+                            color: R.colorPrimary,
+                            child: Text(
+                              "Select date",
+                              style: R.textHeading3L,
+                            ),
+                            onPressed: () {
+                              // _selectDate(context);
+                              DatePicker.showDateTimePicker(context,
+                                  showTitleActions: true, onChanged: (date) {
+                                print('change $date in time zone ' +
+                                    date.timeZoneOffset.inHours.toString());
+                              }, onConfirm: (date) {
+                                print('confirm $date');
+                                setState(() {
+                                  selectedDate = date;
+                                });
+                              }, currentTime: DateTime.now());
+                            }),
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter your date';
+                        }
+                        return null;
+                      },
+                    ),
+                    sizedBoxspace,
+                    TextFormField(
+                      onFieldSubmitted: (value) =>
+                          eventDuration = int.parse(value),
+                      maxLength: 5,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                      ],
+                      cursorColor: R.colorPrimary,
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.av_timer),
+                          border: const OutlineInputBorder(),
+                          hintText: "Type your event's duration (ie. minutes)",
+                          helperText: "Write your duration of event"),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter your duration';
+                        }
+                        return null;
+                      },
+                    ),
+                    sizedBoxspace,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            RaisedButton(
+                              color: R.colorError,
+                              onPressed: () {
+                                // Validate returns true if the form is valid, or false
+                                // otherwise.
+                                // if (_formKey.currentState.validate()) {
+                                //   // If the form is valid, display a Snackbar.
+                                //   Scaffold.of(context)
+                                //       .showSnackBar(SnackBar(content: Text('Processing Data')));
+                                // }
+                              },
                               child: Text(
-                                "Select date",
+                                'Clear Participanted Uers',
+                                style: R.textNormalWhiteForL,
+                              ),
+                            ),
+                            Padding(padding: EdgeInsets.only(right: 8.0)),
+                            RaisedButton(
+                              color: R.colorPrimary,
+                              onPressed: () async {
+                                await Database().saveEvent(Event(
+                                  duration: eventDuration,
+                                  name: eventName,
+                                  location: eventLocation,
+                                  startDay: selectedDate.millisecondsSinceEpoch,
+                                ));
+                              },
+                              child: Text(
+                                'Save',
                                 style: R.textHeading3L,
                               ),
-                              onPressed: () {
-                                // _selectDate(context);
-                                DatePicker.showDateTimePicker(context,
-                                    showTitleActions: true, onChanged: (date) {
-                                  print('change $date in time zone ' +
-                                      date.timeZoneOffset.inHours.toString());
-                                }, onConfirm: (date) {
-                                  print('confirm $date');
-                                  setState(() {
-                                    selectedDate = date;
-                                  });
-                                }, currentTime: DateTime.now());
-                              }),
-                        ),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter your date';
-                          }
-                          return null;
-                        },
-                      ),
-                      sizedBoxspace,
-                      TextFormField(
-                        onFieldSubmitted: (value) =>
-                            eventDuration = int.parse(value),
-                        maxLength: 5,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          WhitelistingTextInputFormatter.digitsOnly
-                        ],
-                        cursorColor: R.colorPrimary,
-                        decoration: InputDecoration(
-                            icon: Icon(Icons.av_timer),
-                            border: const OutlineInputBorder(),
-                            hintText:
-                                "Type your event's duration (ie. minutes)",
-                            helperText: "Write your duration of event"),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter your duration';
-                          }
-                          return null;
-                        },
-                      ),
-                      sizedBoxspace,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              RaisedButton(
-                                color: R.colorError,
-                                onPressed: () {
-                                  // Validate returns true if the form is valid, or false
-                                  // otherwise.
-                                  // if (_formKey.currentState.validate()) {
-                                  //   // If the form is valid, display a Snackbar.
-                                  //   Scaffold.of(context)
-                                  //       .showSnackBar(SnackBar(content: Text('Processing Data')));
-                                  // }
-                                },
-                                child: Text(
-                                  'Clear Participanted Uers',
-                                  style: R.textNormalWhiteForL,
-                                ),
-                              ),
-                              Padding(padding: EdgeInsets.only(right: 8.0)),
-                              RaisedButton(
-                                color: R.colorPrimary,
-                                onPressed: () async {
-                                  await Database().saveEvent(Event(
-                                    duration: eventDuration,
-                                    name: eventName,
-                                    location: eventLocation,
-                                    startDay:
-                                        selectedDate.millisecondsSinceEpoch,
-                                  ));
-                                },
-                                child: Text(
-                                  'Save',
-                                  style: R.textHeading3L,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
