@@ -2,6 +2,7 @@ import 'package:checkmein/customs/poly_state.dart';
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/pages/event_page.dart';
+import 'package:checkmein/pages/menu.dart';
 import 'package:checkmein/resources.dart';
 import 'package:checkmein/signin_service.dart';
 import 'package:checkmein/utils.dart';
@@ -46,9 +47,12 @@ class LoginPageState extends PolyState<LoginPage> {
               onPressed: () async {
                 var user = await login();
                 if (user != null) {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
                   Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (buildContext) {
-                    return EventPage();
+                      .push(MaterialPageRoute(builder: (context) {
+                    return MenuPage();
                   }));
                 }
               },
@@ -101,9 +105,12 @@ class LoginPageState extends PolyState<LoginPage> {
               onPressed: () async {
                 var user = await login();
                 if (user != null) {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (buildContext) {
-                    return EventPage();
+                    return MenuPage();
                   }));
                 }
               },
@@ -156,9 +163,12 @@ class LoginPageState extends PolyState<LoginPage> {
               onPressed: () async {
                 var user = await login();
                 if (user != null) {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (buildContext) {
-                    return EventPage();
+                    return MenuPage();
                   }));
                 }
               },
@@ -211,9 +221,12 @@ class LoginPageState extends PolyState<LoginPage> {
               onPressed: () async {
                 var user = await login();
                 if (user != null) {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (buildContext) {
-                    return EventPage();
+                    return MenuPage();
                   }));
                 }
               },

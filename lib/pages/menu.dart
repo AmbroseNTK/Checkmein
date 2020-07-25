@@ -1,3 +1,5 @@
+import 'package:checkmein/pages/event_page.dart';
+import 'package:checkmein/pages/scan.dart';
 import 'package:checkmein/resources.dart';
 import 'package:flutter/material.dart';
 
@@ -34,17 +36,21 @@ class MenuPageState extends State<MenuPage> {
       padding: EdgeInsets.fromLTRB(0, 0, 10.0, 0),
       // height: MediaQuery.of(context).size.height * 0.2,
       child: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => EventPage()));
+        },
         icon: Image.asset(
           'assets/images/event.png',
           width: 25.0,
           height: 25.0,
         ),
         label: Text(
-          'Create event',
+          'Manage events',
           style: R.textTitleL,
         ),
-        tooltip: "Create Your Event",
+        tooltip: "Manage events",
       ),
     );
     Container container2 = Container(
@@ -53,16 +59,20 @@ class MenuPageState extends State<MenuPage> {
       // height: MediaQuery.of(context).size.width * 0.2,
       child: FloatingActionButton.extended(
         label: Text(
-          'View Attendee',
+          'Check-in',
           style: R.textTitleL,
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) => ScanPage()));
+        },
         icon: Image.asset(
           'assets/images/view.png',
           width: 25.0,
           height: 25.0,
         ),
-        tooltip: "View Attendee",
+        tooltip: "Check-in",
       ),
     );
     if (MediaQuery.of(context).size.width >= 768) {
