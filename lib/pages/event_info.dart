@@ -2,6 +2,7 @@ import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/resources.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -180,15 +181,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                           children: [
                             RaisedButton(
                               color: R.colorError,
-                              onPressed: () {
-                                // Validate returns true if the form is valid, or false
-                                // otherwise.
-                                // if (_formKey.currentState.validate()) {
-                                //   // If the form is valid, display a Snackbar.
-                                //   Scaffold.of(context)
-                                //       .showSnackBar(SnackBar(content: Text('Processing Data')));
-                                // }
-                              },
+                              onPressed: () {},
                               child: Text(
                                 'Clear Participanted Uers',
                                 style: R.textNormalWhiteForL,
@@ -198,12 +191,29 @@ class _EventInfoPageState extends State<EventInfoPage> {
                             RaisedButton(
                               color: R.colorPrimary,
                               onPressed: () async {
-                                await Database().saveEvent(Event(
-                                  duration: eventDuration,
-                                  name: eventName,
-                                  location: eventLocation,
-                                  startDay: selectedDate.millisecondsSinceEpoch,
-                                ));
+                                if (eventName == "") {
+                                  showSnackBar(
+                                      "Please enter event's name", context);
+                                  return;
+                                }
+                                if (eventLocation == "") {
+                                  showSnackBar(
+                                      "Please enter event's location", context);
+                                  return;
+                                }
+                                try {
+                                  await Database().saveEvent(Event(
+                                    duration: eventDuration,
+                                    name: eventName,
+                                    location: eventLocation,
+                                    startDay:
+                                        selectedDate.millisecondsSinceEpoch,
+                                  ));
+                                  showSnackBar("$eventName was saved", context);
+                                } catch (e) {
+                                  showSnackBar(
+                                      "Failed to save $eventName", context);
+                                }
                               },
                               child: Text(
                                 'Save',
@@ -225,11 +235,15 @@ class _EventInfoPageState extends State<EventInfoPage> {
   }
 
   DateTime selectedDate = DateTime.now();
-  void showSnackBar(String mess) {
-    Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(
-      mess,
-      style: R.textNormalWhiteForL,
-    )));
+  void showSnackBar(String mess, BuildContext ctx) {
+    Flushbar(
+      animationDuration: Duration(seconds: 1),
+      message: mess,
+      icon: Icon(
+        Icons.info,
+        color: R.colorPrimary,
+      ),
+      duration: Duration(seconds: 3),
+    ).show(context);
   }
 }

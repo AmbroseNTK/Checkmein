@@ -83,13 +83,17 @@ class Database {
   }
 
   Future<void> saveEvent(Event event) async {
-    var getUid = await _firebaseAuthService.firebaseAuth.currentUser();
-    await _firestore.collection("events").add({
-      "ownerId": getUid.uid,
+    var user = await _firebaseAuthService.firebaseAuth.currentUser();
+
+    var ref = await _firestore.collection("events").add({
+      "ownerId": user.uid,
       "name": event.name,
       "location": event.location,
       "duration": event.duration,
       "startDay": event.startDay
+    });
+    await _firestore.collection("users").document(user.uid).updateData({
+      "events": FieldValue.arrayUnion([ref.documentID])
     });
   }
 }
