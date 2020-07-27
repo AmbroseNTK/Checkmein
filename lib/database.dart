@@ -83,17 +83,36 @@ class Database {
   }
 
   Future<void> saveEvent(Event event) async {
-    var user = await _firebaseAuthService.firebaseAuth.currentUser();
-
+    var usr = await _firebaseAuthService.firebaseAuth.currentUser();
+    var user = new User(
+        checkinTime: DateTime.now().millisecondsSinceEpoch,
+        email: usr.email,
+        displayName: usr.displayName,
+        photoURL: usr.photoUrl,
+        uid: null);
     var ref = await _firestore.collection("events").add({
-      "ownerId": user.uid,
+      "ownerId": usr.uid,
       "name": event.name,
       "location": event.location,
       "duration": event.duration,
-      "startDay": event.startDay
-    }).then((value) {
-      print(value.documentID);
-      _firestore.collection("users").document(user.uid).updateData({
+      "startDay": event.startDay,
+    })
+        // await _firestore.collection("users").document(user.uid).updateData({
+        //   "events": FieldValue.arrayUnion([ref.documentID])
+        // });
+        .then((value) {
+      _firestore
+          .collection("events")
+          .document(value.documentID)
+          .collection("participants")
+          .add({
+        "checkinTime": user.checkinTime,
+        "displayName": user.displayName,
+        "photoURL": user.photoURL,
+        "email": user.email
+      });
+
+      _firestore.collection("users").document(usr.uid).updateData({
         "events": FieldValue.arrayUnion([value.documentID])
       });
     });
