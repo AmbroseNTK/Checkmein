@@ -1,3 +1,4 @@
+import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/pages/event_info.dart';
 import 'package:checkmein/pages/event_page.dart';
 import 'package:checkmein/pages/login.dart';
@@ -14,5 +15,11 @@ void main() {
     ),
     home: LoginPage(),
     debugShowCheckedModeBanner: false,
+    initialRoute: '/',
+    routes: <String, WidgetBuilder>{
+      '/menu': (BuildContext context) => MenuPage(),
+      '/event': (BuildContext context) => EventPage(),
+      '/event-info': (BuildContext context) => EventInfoPage(),
+    },
   ));
 }

@@ -30,14 +30,11 @@ class ScanPageState extends State<ScanPage> {
     _webcamWidget =
         HtmlElementView(key: UniqueKey(), viewType: 'webcamVideoElement');
 
-    window.navigator
-        .getUserMedia(audio: false, video: true
-            // video: {
-            //   "facingMode": {"exact": "environment"
-            // }
-            // }
-            )
-        .then((MediaStream mediaStream) {
+    window.navigator.getUserMedia(audio: false,
+        // video: true
+        video: {
+          "facingMode": {"exact": "environment"}
+        }).then((MediaStream mediaStream) {
       _mediaStream = mediaStream;
       _webcamVideoElement.srcObject = mediaStream;
       // _webcamVideoElement.autoplay = true;
