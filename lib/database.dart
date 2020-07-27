@@ -2,6 +2,7 @@ import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 
 class Database {
   Firestore _firestore = Firestore.instance;
@@ -96,29 +97,19 @@ class Database {
       "location": event.location,
       "duration": event.duration,
       "startDay": event.startDay,
-    })
-        // await _firestore.collection("users").document(user.uid).updateData({
-        //   "events": FieldValue.arrayUnion([ref.documentID])
-        // });
-        .then((value) {
-      _firestore
-          .collection("events")
-          .document(value.documentID)
-          .collection("participants")
-          .add({
-        "checkinTime": user.checkinTime,
-        "displayName": user.displayName,
-        "photoURL": user.photoURL,
-        "email": user.email
-      });
-
-      _firestore.collection("users").document(usr.uid).updateData({
-        "events": FieldValue.arrayUnion([value.documentID])
-      });
+    });
+    await _firestore.collection("users").document(user.uid).updateData({
+      "events": FieldValue.arrayUnion([ref.documentID])
+    });
+    await ref.collection("participants").add({
+      "checkinTime": user.checkinTime,
+      "displayName": user.displayName,
+      "photoURL": user.photoURL,
+      "email": user.email
     });
   }
 
-  Future<void> saveUers(User user) async {
+  Future<void> saveUsers(User user) async {
     _firestore.collection("users").document(user.uid).setData({"events": []});
   }
 }
