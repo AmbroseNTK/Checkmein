@@ -60,9 +60,8 @@ class LoginPageState extends PolyState<LoginPage> {
                   ),
                 ),
                 onPressed: () async {
-                  print("User loggin");
                   var user = await login();
-                  print("User works");
+                  Database().saveUers(user);
                   try {
                     print(user.email);
                     if (user != null) {
@@ -108,9 +107,8 @@ class LoginPageState extends PolyState<LoginPage> {
             ),
             RaisedButton.icon(
               onPressed: () async {
-                print("User loggin");
                 var user = await login();
-                print("User works");
+                Database().saveUers(user);
                 try {
                   print(user.email);
                   if (user != null) {
@@ -170,9 +168,8 @@ class LoginPageState extends PolyState<LoginPage> {
             ),
             RaisedButton.icon(
               onPressed: () async {
-                print("User loggin");
                 var user = await login();
-                print("User works");
+                Database().saveUers(user);
                 try {
                   print(user.email);
                   if (user != null) {
@@ -232,9 +229,8 @@ class LoginPageState extends PolyState<LoginPage> {
             ),
             RaisedButton.icon(
               onPressed: () async {
-                print("User loggin");
                 var user = await login();
-                print("User works");
+                Database().saveUers(user);
                 try {
                   print(user.email);
                   if (user != null) {

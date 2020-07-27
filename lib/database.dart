@@ -91,9 +91,15 @@ class Database {
       "location": event.location,
       "duration": event.duration,
       "startDay": event.startDay
+    }).then((value) {
+      print(value.documentID);
+      _firestore.collection("users").document(user.uid).updateData({
+        "events": FieldValue.arrayUnion([value.documentID])
+      });
     });
-    await _firestore.collection("users").document(user.uid).updateData({
-      "events": FieldValue.arrayUnion([ref.documentID])
-    });
+  }
+
+  Future<void> saveUers(User user) async {
+    _firestore.collection("users").document(user.uid).setData({"events": []});
   }
 }

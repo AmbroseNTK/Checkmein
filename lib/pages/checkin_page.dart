@@ -63,7 +63,10 @@ class _CheckinPageState extends State<CheckinPage> {
               child: IconButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Navigator.popAndPushNamed(context, '/menu');
+                  Navigator.popAndPushNamed(
+                    context,
+                    '/menu',
+                  );
                 },
                 icon: Image.asset(
                   'assets/images/real-estate.png',

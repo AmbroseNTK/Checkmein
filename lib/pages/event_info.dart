@@ -195,24 +195,30 @@ class _EventInfoPageState extends State<EventInfoPage> {
                                   showSnackBar(
                                       "Please enter event's name", context);
                                   return;
-                                }
-                                if (eventLocation == "") {
+                                } else if (eventLocation == "") {
                                   showSnackBar(
                                       "Please enter event's location", context);
                                   return;
-                                }
-                                try {
-                                  await Database().saveEvent(Event(
-                                    duration: eventDuration,
-                                    name: eventName,
-                                    location: eventLocation,
-                                    startDay:
-                                        selectedDate.millisecondsSinceEpoch,
-                                  ));
-                                  showSnackBar("$eventName was saved", context);
-                                } catch (e) {
-                                  showSnackBar(
-                                      "Failed to save $eventName", context);
+                                } else if (eventDuration == 0) {
+                                  showSnackBar("Please enter event's duration ",
+                                      context);
+                                  return;
+                                } else {
+                                  try {
+                                    await Database().saveEvent(Event(
+                                      duration: eventDuration,
+                                      name: eventName,
+                                      location: eventLocation,
+                                      startDay:
+                                          selectedDate.millisecondsSinceEpoch,
+                                    ));
+                                    showSnackBar(
+                                        "$eventName was saved", context);
+                                  } catch (e) {
+                                    print(e);
+                                    showSnackBar(
+                                        "Failed to save $eventName", context);
+                                  }
                                 }
                               },
                               child: Text(
