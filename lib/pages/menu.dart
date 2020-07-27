@@ -31,7 +31,7 @@ class MenuPageState extends State<MenuPage> {
 
   Widget buildMenu(BuildContext context) {
     Container container1 = Container(
-      constraints: BoxConstraints(minWidth: 250),
+      constraints: BoxConstraints(minWidth: 290),
       width: MediaQuery.of(context).size.width * 0.2,
       padding: EdgeInsets.fromLTRB(0, 0, 10.0, 0),
       // height: MediaQuery.of(context).size.height * 0.2,

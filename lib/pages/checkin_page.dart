@@ -1,5 +1,6 @@
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
+import 'package:checkmein/pages/menu.dart';
 import 'package:checkmein/resources.dart';
 import 'package:flutter/material.dart';
 
@@ -60,7 +61,10 @@ class _CheckinPageState extends State<CheckinPage> {
           Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Navigator.popAndPushNamed(context, '/menu');
+                },
                 icon: Image.asset(
                   'assets/images/real-estate.png',
                   width: 100.0,

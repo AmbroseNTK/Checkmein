@@ -13,7 +13,13 @@ void main() {
       primaryColor: R.colorPrimary,
       accentColor: R.colorSecondary,
     ),
-    home: CheckinPage(),
+    home: LoginPage(),
     debugShowCheckedModeBanner: false,
+    initialRoute: '/',
+    routes: <String, WidgetBuilder>{
+      '/menu': (BuildContext context) => MenuPage(),
+      '/event': (BuildContext context) => EventPage(),
+      '/event-info': (BuildContext context) => EventInfoPage(),
+    },
   ));
 }

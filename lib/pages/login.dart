@@ -44,32 +44,37 @@ class LoginPageState extends PolyState<LoginPage> {
               height: 60,
             ),
             RaisedButton.icon(
-              onPressed: () async {
-                var user = await login();
-                if (user != null) {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return MenuPage();
-                  }));
-                }
-              },
-              color: Colors.white,
-              elevation: 10,
-              hoverColor: R.colorWhite,
-              icon: Image.asset(
-                "assets/images/gicon.png",
-                width: 25,
-              ),
-              label: Text("Login with Google",
+                color: Colors.white,
+                elevation: 10,
+                hoverColor: R.colorWhite,
+                icon: Image.asset(
+                  "assets/images/gicon.png",
+                  width: 25,
+                ),
+                label: Text(
+                  "Login with Google",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 28,
                     fontFamily: 'FiraSans',
-                  )),
-            )
+                  ),
+                ),
+                onPressed: () async {
+                  print("User loggin");
+                  var user = await login();
+                  print("User works");
+                  try {
+                    print(user.email);
+                    if (user != null) {
+                      // await Navigator.popAndPushNamed(context, '/menu');
+                      Navigator.pop(context);
+                      await Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MenuPage()));
+                    }
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                })
           ],
         ),
       ),
@@ -103,15 +108,19 @@ class LoginPageState extends PolyState<LoginPage> {
             ),
             RaisedButton.icon(
               onPressed: () async {
+                print("User loggin");
                 var user = await login();
-                if (user != null) {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
+                print("User works");
+                try {
+                  print(user.email);
+                  if (user != null) {
+                    // await Navigator.popAndPushNamed(context, '/menu');
+                    Navigator.pop(context);
+                    await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MenuPage()));
                   }
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (buildContext) {
-                    return MenuPage();
-                  }));
+                } catch (e) {
+                  print(e);
                 }
               },
               color: Colors.white,
@@ -161,15 +170,19 @@ class LoginPageState extends PolyState<LoginPage> {
             ),
             RaisedButton.icon(
               onPressed: () async {
+                print("User loggin");
                 var user = await login();
-                if (user != null) {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
+                print("User works");
+                try {
+                  print(user.email);
+                  if (user != null) {
+                    // await Navigator.popAndPushNamed(context, '/menu');
+                    Navigator.pop(context);
+                    await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MenuPage()));
                   }
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (buildContext) {
-                    return MenuPage();
-                  }));
+                } catch (e) {
+                  print(e);
                 }
               },
               color: Colors.white,
@@ -219,15 +232,19 @@ class LoginPageState extends PolyState<LoginPage> {
             ),
             RaisedButton.icon(
               onPressed: () async {
+                print("User loggin");
                 var user = await login();
-                if (user != null) {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
+                print("User works");
+                try {
+                  print(user.email);
+                  if (user != null) {
+                    // await Navigator.popAndPushNamed(context, '/menu');
+                    Navigator.pop(context);
+                    await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MenuPage()));
                   }
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (buildContext) {
-                    return MenuPage();
-                  }));
+                } catch (e) {
+                  print(e);
                 }
               },
               color: Colors.white,
