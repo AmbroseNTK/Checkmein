@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
@@ -16,9 +18,7 @@ class Database {
   }
   Future<List<Event>> getEvents() async {
     List<Event> listEvents = List();
-    print("Get events");
     var user = await _firebaseAuthService.firebaseAuth.currentUser();
-    print(user.uid);
     var snapshot =
         await _firestore.collection('users').document(user.uid).get();
     try {
@@ -98,7 +98,7 @@ class Database {
       "duration": event.duration,
       "startDay": event.startDay,
     });
-    await _firestore.collection("users").document(user.uid).updateData({
+    await _firestore.collection("users").document(usr.uid).updateData({
       "events": FieldValue.arrayUnion([ref.documentID])
     });
     await ref.collection("participants").add({
@@ -110,6 +110,17 @@ class Database {
   }
 
   Future<void> saveUsers(User user) async {
-    _firestore.collection("users").document(user.uid).setData({"events": []});
+    var usr = await _firebaseAuthService.firebaseAuth.currentUser();
+    var userInfo = await _firestore.collection("users").document(usr.uid).get();
+    print("User info: " + userInfo.documentID);
+    if (userInfo.exists) {
+      print("Already exists");
+      return;
+    } else {
+      await _firestore
+          .collection("users")
+          .document(user.uid)
+          .setData({"events": []});
+    }
   }
 }

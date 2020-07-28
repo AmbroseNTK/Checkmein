@@ -30,7 +30,6 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(listEvents.length);
     return Scaffold(
       appBar: AppBar(
         title: Text(
