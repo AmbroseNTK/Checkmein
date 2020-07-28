@@ -123,4 +123,38 @@ class Database {
           .setData({"events": []});
     }
   }
+
+  Future<void> deleteEvent(String eventId) async {
+    var usr = await _firebaseAuthService.firebaseAuth.currentUser();
+    var refEventFromUser =
+        await _firestore.collection("users").document(usr.uid).get();
+
+    // get all events of user
+    List items = List();
+    for (var item in refEventFromUser.data.values) {
+      for (var i in item) {
+        items.add(i);
+      }
+    }
+
+    for (var i = 0; i < items.length; i++) {
+      if (eventId == items[i]) {
+        await _firestore.collection("events").document(eventId).delete();
+        await _firestore
+            .collection("events")
+            .document(eventId)
+            .collection("participants")
+            .getDocuments()
+            .then((value) {
+          for (DocumentSnapshot ds in value.documents) {
+            ds.reference.delete();
+          }
+        });
+        await _firestore.collection("users").document(usr.uid).updateData({
+          "events": FieldValue.arrayRemove([items[i]])
+        });
+      } else {}
+    }
+  }
+  // Future<void> UpdateEvent
 }

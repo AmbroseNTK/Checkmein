@@ -1,3 +1,4 @@
+import 'package:checkmein/customs/dialog_button.dart';
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
@@ -13,6 +14,8 @@ class EventPage extends StatefulWidget {
 class _EventPageState extends State<EventPage> {
   List<Event> listEvents = List();
   List<User> listUsers = List();
+
+  Event event;
 
   Future<void> loadData() async {
     var result = await Database().getEvents();
@@ -30,6 +33,7 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("List events: " + listEvents.length.toString());
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -131,7 +135,47 @@ class _EventPageState extends State<EventPage> {
                                                       Icons.delete,
                                                       color: R.colorBlack,
                                                     ),
-                                                    onPressed: () {}),
+                                                    onPressed: () async {
+                                                      await showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              backgroundColor: R
+                                                                  .colorPrimary,
+                                                              contentTextStyle:
+                                                                  R.textHeading3L,
+                                                              elevation: 12,
+                                                              titleTextStyle: R
+                                                                  .textHeadingWhite,
+                                                              useMaterialBorderRadius:
+                                                                  true,
+                                                              scrollable: true,
+                                                              actions: <Widget>[
+                                                                new FlatButton(
+                                                                  child: new Text(
+                                                                      "Accept"),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Database().deleteEvent(
+                                                                        listEvents[i]
+                                                                            .eventId);
+                                                                  },
+                                                                ),
+                                                                new FlatButton(
+                                                                    child: new Text(
+                                                                        "Cancel"),
+                                                                    onPressed:
+                                                                        () {})
+                                                              ],
+                                                              title: Text(
+                                                                  "Are you sure?"),
+                                                            );
+                                                          });
+                                                      // print("List event i: " +
+                                                      //     listEvents[i]
+                                                      //         .eventId);
+                                                    }),
                                               ],
                                             )
                                           ]),
