@@ -3,6 +3,7 @@ import 'package:checkmein/models/user.dart';
 import 'package:checkmein/pages/menu.dart';
 import 'package:checkmein/resources.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../database.dart';
 
@@ -31,6 +32,7 @@ class _CheckinPageState extends State<CheckinPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(listUsers);
     return Scaffold(
       backgroundColor: R.colorPrimary,
       appBar: AppBar(
@@ -92,6 +94,22 @@ class _CheckinPageState extends State<CheckinPage> {
                     color: Colors.white,
                     width: MediaQuery.of(context).size.width * 0.3,
                     height: MediaQuery.of(context).size.width * 0.3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        QrImage(
+                          data: 'Hello World',
+                          version: QrVersions.auto,
+                          size: 320,
+                          gapless: true,
+                          // embeddedImage: AssetImage('assets/images/allow.png'),
+                          embeddedImageStyle: QrEmbeddedImageStyle(
+                            size: Size(MediaQuery.of(context).size.width,
+                                MediaQuery.of(context).size.height),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               ],

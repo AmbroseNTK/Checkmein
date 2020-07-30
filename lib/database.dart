@@ -1,8 +1,9 @@
+import 'dart:html';
+
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 
 class Database {
   Firestore _firestore = Firestore.instance;
@@ -16,11 +17,12 @@ class Database {
   }
   Future<List<Event>> getEvents() async {
     List<Event> listEvents = List();
-    print("Get events");
     var user = await _firebaseAuthService.firebaseAuth.currentUser();
-    print(user.uid);
     var snapshot =
         await _firestore.collection('users').document(user.uid).get();
+    // _firestore.collection('users').document(user.uid).snapshots().listen((event) {
+
+    // })
     try {
       if (snapshot.exists) {
         var eventIds = snapshot.data["events"] as List<dynamic>;
@@ -98,7 +100,7 @@ class Database {
       "duration": event.duration,
       "startDay": event.startDay,
     });
-    await _firestore.collection("users").document(user.uid).updateData({
+    await _firestore.collection("users").document(usr.uid).updateData({
       "events": FieldValue.arrayUnion([ref.documentID])
     });
     await ref.collection("participants").add({
@@ -110,6 +112,76 @@ class Database {
   }
 
   Future<void> saveUsers(User user) async {
-    _firestore.collection("users").document(user.uid).setData({"events": []});
+    var usr = await _firebaseAuthService.firebaseAuth.currentUser();
+    var userInfo = await _firestore.collection("users").document(usr.uid).get();
+    print("User info: " + userInfo.documentID);
+    if (userInfo.exists) {
+      print("Already exists");
+      return;
+    } else {
+      await _firestore
+          .collection("users")
+          .document(user.uid)
+          .setData({"events": []});
+    }
+  }
+
+  Future<void> deleteEvent(String eventId) async {
+    var usr = await _firebaseAuthService.firebaseAuth.currentUser();
+    var refEventFromUser =
+        await _firestore.collection("users").document(usr.uid).get();
+
+    // get all events of user
+    List items = List();
+    for (var item in refEventFromUser.data.values) {
+      for (var i in item) {
+        items.add(i);
+      }
+    }
+
+    for (var i = 0; i < items.length; i++) {
+      if (eventId == items[i]) {
+        await _firestore.collection("events").document(eventId).delete();
+        await _firestore
+            .collection("events")
+            .document(eventId)
+            .collection("participants")
+            .getDocuments()
+            .then((value) {
+          for (DocumentSnapshot ds in value.documents) {
+            ds.reference.delete();
+          }
+        });
+        await _firestore.collection("users").document(usr.uid).updateData({
+          "events": FieldValue.arrayRemove([items[i]])
+        });
+      } else {}
+    }
+  }
+
+  Future<void> updateEvent(String eventId, Event event) async {
+    try {
+      await _firestore.collection("events").document(eventId).updateData({
+        "duration": event.duration,
+        "location": event.location,
+        "name": event.name,
+        "startDay": event.startDay
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteParticipantsByEventId(String eventId) async {
+    try {
+      await _firestore
+          .collection("events")
+          .document(eventId)
+          .collection("participants")
+          .document()
+          .delete();
+    } catch (e) {
+      print(e);
+    }
   }
 }

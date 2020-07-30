@@ -2,11 +2,12 @@ import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/resources.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 
 class EventInfoPage extends StatefulWidget {
   @override
@@ -18,7 +19,15 @@ class _EventInfoPageState extends State<EventInfoPage> {
   String eventName = "";
   String eventLocation = "";
   int eventDuration = 0;
+  final format = DateFormat("yyyy-MM-dd HH:mm");
+  final initialValue = DateTime.now();
 
+  bool autoValidate = false;
+  bool readOnly = true;
+  bool showResetIcon = true;
+  DateTime value = DateTime.now();
+  int changedCount = 0;
+  int savedCount = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,50 +118,60 @@ class _EventInfoPageState extends State<EventInfoPage> {
                       },
                     ),
                     sizedBoxspace,
-                    TextFormField(
+                    DateTimeField(
                       maxLength: 20,
                       keyboardType: TextInputType.datetime,
-                      cursorColor: R.colorPrimary,
-                      readOnly: true,
                       decoration: InputDecoration(
                         icon: Icon(Icons.access_alarms),
                         border: const OutlineInputBorder(),
-                        hintText: "$selectedDate",
-                        labelText: "$selectedDate",
-                        labelStyle: R.textHeading3L,
                         helperText: "Write the date of yours event",
-                        suffix: RaisedButton(
-                            color: R.colorPrimary,
-                            child: Text(
-                              "Select date",
-                              style: R.textHeading3L,
-                            ),
-                            onPressed: () {
-                              // _selectDate(context);
-                              DatePicker.showDateTimePicker(context,
-                                  showTitleActions: true, onChanged: (date) {
-                                print('change $date in time zone ' +
-                                    date.timeZoneOffset.inHours.toString());
-                              }, onConfirm: (date) {
-                                print('confirm $date');
-                                setState(() {
-                                  selectedDate = date;
-                                });
-                              }, currentTime: DateTime.now());
-                            }),
                       ),
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter your date';
+                      format: DateFormat("yyyy-MM-dd HH:mm a"),
+                      onShowPicker: (context, currentValue) async {
+                        final date = await showDatePicker(
+                            builder: (context, child) {
+                              return Theme(
+                                data: ThemeData.light().copyWith(
+                                  colorScheme: ColorScheme.light(
+                                    primary: R.colorPrimary,
+                                    onPrimary: R.colorBlack,
+                                    onError: R.colorError,
+                                    onSurface: R.colorBlack,
+                                  ),
+                                  dialogBackgroundColor: R.colorWhite,
+                                ),
+                                child: child,
+                              );
+                            },
+                            context: context,
+                            initialDate: currentValue ?? DateTime.now(),
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2100));
+                        if (date != null) {
+                          final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.fromDateTime(
+                                  currentValue ?? DateTime.now()));
+                          return DateTimeField.combine(date, time);
+                        } else {
+                          return currentValue;
                         }
-                        return null;
                       },
+                      autovalidate: autoValidate,
+                      validator: (date) => date == null ? 'Invalid date' : null,
+                      initialValue: initialValue,
+                      onSaved: (date) => setState(() {
+                        value = date;
+                        savedCount++;
+                      }),
+                      resetIcon: showResetIcon ? Icon(Icons.delete) : null,
+                      readOnly: readOnly,
                     ),
                     sizedBoxspace,
                     TextFormField(
                       onFieldSubmitted: (value) =>
                           eventDuration = int.parse(value),
-                      maxLength: 5,
+                      maxLength: 3,
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
                         WhitelistingTextInputFormatter.digitsOnly
