@@ -4,7 +4,6 @@ import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 
 class Database {
   Firestore _firestore = Firestore.instance;
@@ -21,6 +20,9 @@ class Database {
     var user = await _firebaseAuthService.firebaseAuth.currentUser();
     var snapshot =
         await _firestore.collection('users').document(user.uid).get();
+    // _firestore.collection('users').document(user.uid).snapshots().listen((event) {
+
+    // })
     try {
       if (snapshot.exists) {
         var eventIds = snapshot.data["events"] as List<dynamic>;
@@ -156,5 +158,30 @@ class Database {
       } else {}
     }
   }
-  // Future<void> UpdateEvent
+
+  Future<void> updateEvent(String eventId, Event event) async {
+    try {
+      await _firestore.collection("events").document(eventId).updateData({
+        "duration": event.duration,
+        "location": event.location,
+        "name": event.name,
+        "startDay": event.startDay
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteParticipantsByEventId(String eventId) async {
+    try {
+      await _firestore
+          .collection("events")
+          .document(eventId)
+          .collection("participants")
+          .document()
+          .delete();
+    } catch (e) {
+      print(e);
+    }
+  }
 }

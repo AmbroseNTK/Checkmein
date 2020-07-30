@@ -1,9 +1,11 @@
 import 'package:checkmein/customs/dialog_button.dart';
+import 'package:checkmein/customs/snackbar_custom.dart';
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/pages/event_info.dart';
 import 'package:checkmein/resources.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class EventPage extends StatefulWidget {
@@ -123,7 +125,14 @@ class _EventPageState extends State<EventPage> {
                                                       Icons.edit,
                                                       color: R.colorBlack,
                                                     ),
-                                                    onPressed: () {}),
+                                                    onPressed: () {
+                                                      // Navigator.push(
+                                                      //     context,
+                                                      //     MaterialPageRoute(
+                                                      //       builder: (context) =>
+                                                      //           EventInfoPage(),
+                                                      //     ));
+                                                    }),
                                                 IconButton(
                                                     icon: Icon(
                                                       Icons.arrow_downward,
@@ -141,35 +150,61 @@ class _EventPageState extends State<EventPage> {
                                                           builder: (BuildContext
                                                               context) {
                                                             return AlertDialog(
-                                                              backgroundColor: R
-                                                                  .colorPrimary,
+                                                              backgroundColor:
+                                                                  R.colorWhite,
                                                               contentTextStyle:
                                                                   R.textHeading3L,
                                                               elevation: 12,
                                                               titleTextStyle: R
-                                                                  .textHeadingWhite,
+                                                                  .textTitlePrimary,
                                                               useMaterialBorderRadius:
                                                                   true,
                                                               scrollable: true,
                                                               actions: <Widget>[
                                                                 new FlatButton(
                                                                   child: new Text(
-                                                                      "Accept"),
+                                                                      "Accept",
+                                                                      style: R
+                                                                          .textHeading3LPrimary),
                                                                   onPressed:
                                                                       () {
-                                                                    Database().deleteEvent(
-                                                                        listEvents[i]
-                                                                            .eventId);
+                                                                    Database()
+                                                                        .deleteEvent(listEvents[i]
+                                                                            .eventId)
+                                                                        //     .then(
+                                                                        //         (value) {
+                                                                        //   Navigator.pop(
+                                                                        //       context,
+                                                                        //       value);
+                                                                        // })
+                                                                        .whenComplete(
+                                                                            () {
+                                                                      loadData();
+                                                                    }).then((value) {
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          value);
+                                                                    });
+                                                                    showSnackBar(
+                                                                        "${listEvents[i].name} deleted successfully",
+                                                                        context);
                                                                   },
                                                                 ),
                                                                 new FlatButton(
-                                                                    child: new Text(
-                                                                        "Cancel"),
+                                                                    child:
+                                                                        new Text(
+                                                                      "Cancel",
+                                                                      style: R
+                                                                          .textHeading3LPrimary,
+                                                                    ),
                                                                     onPressed:
-                                                                        () {})
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    })
                                                               ],
                                                               title: Text(
-                                                                  "Are you sure?"),
+                                                                  "Delete ${listEvents[i].name}?"),
                                                             );
                                                           });
                                                       // print("List event i: " +
@@ -294,5 +329,17 @@ class _EventPageState extends State<EventPage> {
         ],
       ),
     );
+  }
+
+  void showSnackBar(String mess, BuildContext ctx) {
+    Flushbar(
+      animationDuration: Duration(seconds: 1),
+      message: mess,
+      icon: Icon(
+        Icons.info,
+        color: R.colorPrimary,
+      ),
+      duration: Duration(seconds: 4),
+    ).show(context);
   }
 }

@@ -59,6 +59,9 @@ class LoginPageState extends PolyState<LoginPage> {
                     fontFamily: 'FiraSans',
                   ),
                 ),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    side: BorderSide(color: R.colorWhite, width: 2.0)),
                 onPressed: () async {
                   var user = await login();
                   Database().saveUsers(user);
@@ -106,6 +109,9 @@ class LoginPageState extends PolyState<LoginPage> {
               height: 60,
             ),
             RaisedButton.icon(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  side: BorderSide(color: R.colorWhite, width: 2.0)),
               onPressed: () async {
                 var user = await login();
                 Database().saveUsers(user);
@@ -167,6 +173,9 @@ class LoginPageState extends PolyState<LoginPage> {
               height: 60,
             ),
             RaisedButton.icon(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  side: BorderSide(color: R.colorWhite, width: 2.0)),
               onPressed: () async {
                 var user = await login();
                 Database().saveUsers(user);
@@ -228,6 +237,9 @@ class LoginPageState extends PolyState<LoginPage> {
               height: 60,
             ),
             RaisedButton.icon(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  side: BorderSide(color: R.colorWhite, width: 2.0)),
               onPressed: () async {
                 var user = await login();
                 Database().saveUsers(user);

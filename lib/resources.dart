@@ -15,6 +15,11 @@ class R {
       fontSize: 30,
       color: R.colorBlack,
       fontWeight: FontWeight.bold);
+  static TextStyle textTitlePrimary = TextStyle(
+      fontFamily: 'FiraSans',
+      fontSize: 30,
+      color: R.colorPrimary,
+      fontWeight: FontWeight.bold);
   static TextStyle textTitleS = TextStyle(
       fontFamily: 'FiraSans',
       fontSize: 25,
@@ -49,6 +54,11 @@ class R {
       fontWeight: FontWeight.normal);
 // Text Heading3 for ...
   static TextStyle textHeading3L = TextStyle(
+      fontFamily: 'FiraSans',
+      fontSize: 19,
+      color: R.colorBlack,
+      fontWeight: FontWeight.normal);
+  static TextStyle textHeading3LPrimary = TextStyle(
       fontFamily: 'FiraSans',
       fontSize: 19,
       color: R.colorBlack,
