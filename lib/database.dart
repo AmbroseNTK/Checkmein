@@ -160,6 +160,9 @@ class Database {
   }
 
   Future<void> updateEvent(String eventId, Event event) async {
+    print("from db id: " + eventId);
+    print(event.duration);
+    print(event.name);
     try {
       await _firestore.collection("events").document(eventId).updateData({
         "duration": event.duration,

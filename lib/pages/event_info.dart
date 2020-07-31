@@ -1,6 +1,7 @@
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/pages/checkin_page.dart';
+import 'package:checkmein/pages/menu.dart';
 import 'package:checkmein/resources.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flushbar/flushbar.dart';
@@ -10,6 +11,10 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class EventInfoPage extends StatefulWidget {
+  final Event event;
+  final bool isUpdate;
+  const EventInfoPage({Key key, this.event, this.isUpdate = false})
+      : super(key: key);
   @override
   _EventInfoPageState createState() => _EventInfoPageState();
 }
@@ -20,7 +25,6 @@ class _EventInfoPageState extends State<EventInfoPage> {
   String eventLocation = "";
   int eventDuration = 0;
   final format = DateFormat("yyyy-MM-dd HH:mm");
-  final initialValue = DateTime.now();
 
   bool autoValidate = false;
   bool readOnly = true;
@@ -28,6 +32,23 @@ class _EventInfoPageState extends State<EventInfoPage> {
   DateTime value = DateTime.now();
   int changedCount = 0;
   int savedCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.isUpdate);
+
+    if (widget.isUpdate) {
+      setState(() {
+        eventName = widget.event.name;
+        eventLocation = widget.event.location;
+        eventDuration = widget.event.duration;
+        selectedDate =
+            DateTime.fromMillisecondsSinceEpoch(widget.event.startDay);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +104,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     TextFormField(
+                      initialValue: eventName,
                       onFieldSubmitted: (value) => eventName = value.trim(),
                       maxLength: 50,
                       keyboardType: TextInputType.text,
@@ -101,6 +123,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     TextFormField(
+                      initialValue: eventLocation,
                       onFieldSubmitted: (value) => eventLocation = value.trim(),
                       maxLength: 20,
                       keyboardType: TextInputType.text,
@@ -119,6 +142,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     DateTimeField(
+                      initialValue: selectedDate,
                       maxLength: 20,
                       keyboardType: TextInputType.datetime,
                       decoration: InputDecoration(
@@ -144,14 +168,18 @@ class _EventInfoPageState extends State<EventInfoPage> {
                               );
                             },
                             context: context,
-                            initialDate: currentValue ?? DateTime.now(),
-                            firstDate: DateTime.now(),
+                            initialDate:
+                                widget.isUpdate ? selectedDate : DateTime.now(),
+                            firstDate:
+                                widget.isUpdate ? selectedDate : DateTime.now(),
                             lastDate: DateTime(2100));
                         if (date != null) {
                           final time = await showTimePicker(
                               context: context,
                               initialTime: TimeOfDay.fromDateTime(
-                                  currentValue ?? DateTime.now()));
+                                  widget.isUpdate
+                                      ? selectedDate
+                                      : DateTime.now()));
                           return DateTimeField.combine(date, time);
                         } else {
                           return currentValue;
@@ -159,7 +187,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                       },
                       autovalidate: autoValidate,
                       validator: (date) => date == null ? 'Invalid date' : null,
-                      initialValue: initialValue,
+                      // initialValue: initialValue,
                       onSaved: (date) => setState(() {
                         value = date;
                         savedCount++;
@@ -169,6 +197,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     TextFormField(
+                      initialValue: eventDuration.toString(),
                       onFieldSubmitted: (value) =>
                           eventDuration = int.parse(value),
                       maxLength: 3,
@@ -207,44 +236,9 @@ class _EventInfoPageState extends State<EventInfoPage> {
                               ),
                             ),
                             Padding(padding: EdgeInsets.only(right: 8.0)),
-                            RaisedButton(
-                              color: R.colorPrimary,
-                              onPressed: () async {
-                                if (eventName == "") {
-                                  showSnackBar(
-                                      "Please enter event's name", context);
-                                  return;
-                                } else if (eventLocation == "") {
-                                  showSnackBar(
-                                      "Please enter event's location", context);
-                                  return;
-                                } else if (eventDuration == 0) {
-                                  showSnackBar("Please enter event's duration ",
-                                      context);
-                                  return;
-                                } else {
-                                  try {
-                                    await Database().saveEvent(Event(
-                                      duration: eventDuration,
-                                      name: eventName,
-                                      location: eventLocation,
-                                      startDay:
-                                          selectedDate.millisecondsSinceEpoch,
-                                    ));
-                                    showSnackBar(
-                                        "$eventName was saved", context);
-                                  } catch (e) {
-                                    print(e);
-                                    showSnackBar(
-                                        "Failed to save $eventName", context);
-                                  }
-                                }
-                              },
-                              child: Text(
-                                'Save',
-                                style: R.textHeading3L,
-                              ),
-                            ),
+                            widget.isUpdate
+                                ? _buildUpdateButton(context)
+                                : _buildSaveButton(context),
                           ],
                         ),
                       ),
@@ -255,6 +249,89 @@ class _EventInfoPageState extends State<EventInfoPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  RaisedButton _buildSaveButton(BuildContext context) {
+    return RaisedButton(
+      color: R.colorPrimary,
+      onPressed: () async {
+        if (eventName == "") {
+          showSnackBar("Please enter event's name", context);
+          return;
+        } else if (eventLocation == "") {
+          showSnackBar("Please enter event's location", context);
+          return;
+        } else if (eventDuration == 0) {
+          showSnackBar("Please enter event's duration ", context);
+          return;
+        } else {
+          try {
+            await Database()
+                .saveEvent(Event(
+              duration: eventDuration,
+              name: eventName,
+              location: eventLocation,
+              startDay: selectedDate.millisecondsSinceEpoch,
+            ))
+                .then((value) {
+              showSnackBar("$eventName was saved", context);
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed('/menu');
+            });
+          } catch (e) {
+            print(e);
+            showSnackBar("Failed to save $eventName", context);
+          }
+        }
+      },
+      child: Text(
+        'Save',
+        style: R.textHeading3L,
+      ),
+    );
+  }
+
+  RaisedButton _buildUpdateButton(BuildContext context) {
+    return RaisedButton(
+      color: R.colorPrimary,
+      onPressed: () async {
+        if (eventName == "") {
+          showSnackBar("Please enter event's name", context);
+          return;
+        } else if (eventLocation == "") {
+          showSnackBar("Please enter event's location", context);
+          return;
+        } else if (eventDuration == 0) {
+          showSnackBar("Please enter event's duration ", context);
+          return;
+        } else {
+          try {
+            await Database()
+                .updateEvent(
+                    widget.event.eventId,
+                    Event(
+                        duration: eventDuration,
+                        location: eventLocation,
+                        name: eventName,
+                        startDay: selectedDate.millisecondsSinceEpoch))
+                .then((value) {
+              showSnackBar("$eventName was updated", context);
+              if (Navigator.canPop(context)) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed('/menu');
+              }
+            });
+          } catch (e) {
+            print(e);
+            showSnackBar("Failed to update $eventName", context);
+          }
+        }
+      },
+      child: Text(
+        'Update',
+        style: R.textHeading3L,
       ),
     );
   }
