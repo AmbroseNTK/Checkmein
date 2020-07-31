@@ -8,19 +8,21 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../database.dart';
 
 class CheckinPage extends StatefulWidget {
+  final String event;
+  const CheckinPage({Key key, this.event}) : super(key: key);
   @override
   _CheckinPageState createState() => _CheckinPageState();
 }
 
 class _CheckinPageState extends State<CheckinPage> {
-  List<Event> listEvents = List();
+  // List<Event> listEvents = List();
   List<User> listUsers = List();
 
   Future<void> loadData() async {
-    var result = await Database().getEvents();
+    var result = await Database().getParticipantsByEventId(widget.event);
     setState(() {
-      listEvents.clear();
-      listEvents.addAll(result);
+      listUsers.clear();
+      listUsers.addAll(result);
     });
   }
 
