@@ -49,39 +49,6 @@ class _EventPageState extends State<EventPage> {
     // _isButtonDisabled = false;
   }
 
-  buildDeleteDialog(BuildContext context, int i) {
-    return AlertDialog(
-      backgroundColor: R.colorWhite,
-      contentTextStyle: R.textHeading3L,
-      elevation: 12,
-      titleTextStyle: R.textTitlePrimary,
-      actions: <Widget>[
-        new FlatButton(
-          child: new Text("Accept", style: R.textHeading3LPrimary),
-          onPressed: () async {
-            await Database().deleteEvent(listEvents[i].eventId);
-            var updated_result = await Database().getEvents();
-            listEvents.clear();
-            listEvents = updated_result;
-            Navigator.pop(context);
-            setState(() {
-              print("Rebuild ");
-            });
-          },
-        ),
-        new FlatButton(
-            child: new Text(
-              "Cancel",
-              style: R.textHeading3LPrimary,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            })
-      ],
-      title: Text("Delete ${listEvents[i].name}?"),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     print("List events: " + listEvents.length.toString());

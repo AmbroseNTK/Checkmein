@@ -3,9 +3,14 @@ import 'dart:html';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:checkmein/customs/snackbar_custom.dart';
 import 'package:checkmein/resources.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+// import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart' as dio;
 
 class ScanPage extends StatefulWidget {
   @override
@@ -33,7 +38,7 @@ class ScanPageState extends State<ScanPage> {
     window.navigator.getUserMedia(audio: false,
         // video: true
         video: {
-          "facingMode": {"exact": "environment"}
+          // "facingMode": {"exact": "environment"}
         }).then((MediaStream mediaStream) {
       _mediaStream = mediaStream;
       _webcamVideoElement.srcObject = mediaStream;
@@ -43,6 +48,57 @@ class ScanPageState extends State<ScanPage> {
       // }
     });
   }
+
+  Future<void> callQRDecodeAPI(Blob imgFile,BuildContext context) async {
+    String qrDecodeEndPoint = "https://api.qrserver.com/v1/read-qr-code/";
+    FileReader reader = FileReader();
+    // print(Url.createObjectUrlFromBlob(imgFile));
+    reader.readAsArrayBuffer(imgFile);
+
+    // Listen on event [BLOB] loaded into FileReade and then send it to QR DECODE API
+    await reader.onLoadEnd.firstWhere((element) => element.loaded > 0);
+    try {
+      dio.FormData formData = new dio.FormData.fromMap({
+        'file': new dio.MultipartFile.fromBytes(reader.result,
+            filename: "capture.png", contentType: new MediaType("image", "png"))
+      });
+      var respone =  await new dio.Dio().post(qrDecodeEndPoint,
+          data: formData,
+          options: dio.Options(
+            contentType: 'multipart/form-data',
+          ));
+
+      //[{type: qrcode, symbol: [{seq: 0, data: https://github.com/, error: null}]}]
+      if (respone.statusCode == 200) {
+        print(respone.data);
+
+        // DEBUG MODE
+        showSnackBar(
+          respone.data.toString(),context
+        );
+      }else{
+        showSnackBar(
+          "Fail to decode : "+respone.data.toString(),context
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+
+  void showSnackBar(String mess, BuildContext ctx) {
+    Flushbar(
+      animationDuration: Duration(seconds: 1),
+      message: mess,
+      icon: Icon(
+        Icons.info,
+        color: R.colorPrimary,
+      ),
+      duration: Duration(seconds: 4),
+    ).show(context);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +131,20 @@ class ScanPageState extends State<ScanPage> {
                           _webcamVideoElement.srcObject.getVideoTracks().first);
                       Blob blob = await capture.takePhoto();
                       print(blob);
-                      FileSystem _filesystem = await window
-                          .requestFileSystem(1024 * 1024, persistent: false);
-                      FileEntry fileEntry =
-                          await _filesystem.root.createFile('capture.png');
-                      FileWriter fw = await fileEntry.createWriter();
-                      fw.write(blob);
-                      var file = await fileEntry.file();
-                      print(file.size);
-                      print(file.type);
+
+                      // FileSystem _filesystem = await window
+                      //     .requestFileSystem(1024 * 1024, persistent: false);
+                      // FileEntry fileEntry =
+                      //     await _filesystem.root.createFile('capture.png');
+                      // FileWriter fw = await fileEntry.createWriter();
+                      // fw.write(blob);
+                      // var file = await fileEntry.file();
+                      // FileReader reader = FileReader();
+                      // reader.readAsArrayBuffer(blob);
+                      // print(reader.result.toString());
+
+                      await callQRDecodeAPI(blob,context);
+                      // print("Done");
                     }
                   }
                 },
