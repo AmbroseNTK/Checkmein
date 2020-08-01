@@ -3,7 +3,9 @@ import 'dart:html';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:checkmein/customs/snackbar_custom.dart';
 import 'package:checkmein/resources.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 // import 'package:http/http.dart';
@@ -47,7 +49,7 @@ class ScanPageState extends State<ScanPage> {
     });
   }
 
-  Future<void> callQRDecodeAPI(Blob imgFile) async {
+  Future<void> callQRDecodeAPI(Blob imgFile,BuildContext context) async {
     String qrDecodeEndPoint = "https://api.qrserver.com/v1/read-qr-code/";
     FileReader reader = FileReader();
     // print(Url.createObjectUrlFromBlob(imgFile));
@@ -65,13 +67,38 @@ class ScanPageState extends State<ScanPage> {
           options: dio.Options(
             contentType: 'multipart/form-data',
           ));
+
+      //[{type: qrcode, symbol: [{seq: 0, data: https://github.com/, error: null}]}]
       if (respone.statusCode == 200) {
         print(respone.data);
+
+        // DEBUG MODE
+        showSnackBar(
+          respone.data.toString(),context
+        );
+      }else{
+        showSnackBar(
+          "Fail to decode : "+respone.data.toString(),context
+        );
       }
     } catch (e) {
       print(e);
     }
   }
+
+
+  void showSnackBar(String mess, BuildContext ctx) {
+    Flushbar(
+      animationDuration: Duration(seconds: 1),
+      message: mess,
+      icon: Icon(
+        Icons.info,
+        color: R.colorPrimary,
+      ),
+      duration: Duration(seconds: 4),
+    ).show(context);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +143,7 @@ class ScanPageState extends State<ScanPage> {
                       // reader.readAsArrayBuffer(blob);
                       // print(reader.result.toString());
 
-                      await callQRDecodeAPI(blob);
+                      await callQRDecodeAPI(blob,context);
                       // print("Done");
                     }
                   }
