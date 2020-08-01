@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'dart:math';
 
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
@@ -186,5 +187,15 @@ class Database {
     } catch (e) {
       print(e);
     }
+  }
+
+  String qrDataGenerator() {
+    String data;
+    var characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    Random random = Random.secure();
+    String.fromCharCodes(Iterable.generate(characters.length,
+        (_) => characters.codeUnitAt(random.nextInt(characters.length))));
+    return data;
   }
 }
