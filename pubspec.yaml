@@ -37,6 +37,7 @@ dependencies:
   intl: ^0.16.1
   http: ^0.12.2
   dio: ^3.0.9
+  flutter_spinkit: ^4.1.2+1
 
 dev_dependencies:
   flutter_test:

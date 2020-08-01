@@ -3,6 +3,7 @@ import 'package:checkmein/customs/snackbar_custom.dart';
 import 'package:checkmein/database.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
+import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/pages/event_info.dart';
 import 'package:checkmein/resources.dart';
 import 'package:flushbar/flushbar.dart';
@@ -18,6 +19,20 @@ class _EventPageState extends State<EventPage> {
   List<User> listUsers = List();
 
   Event event;
+  // bool _isButtonDisabled;
+  bool isEnabled = true;
+
+  enableButton() {
+    setState(() {
+      isEnabled = true;
+    });
+  }
+
+  disableButton() {
+    setState(() {
+      isEnabled = false;
+    });
+  }
 
   Future<void> loadData() async {
     var result = await Database().getEvents();
@@ -31,6 +46,7 @@ class _EventPageState extends State<EventPage> {
   void initState() {
     super.initState();
     loadData();
+    // _isButtonDisabled = false;
   }
 
   buildDeleteDialog(BuildContext context, int i) {
@@ -154,25 +170,53 @@ class _EventPageState extends State<EventPage> {
                                             Row(
                                               children: [
                                                 IconButton(
+                                                    tooltip: "Check in now",
+                                                    icon: Icon(
+                                                      Icons.check_circle,
+                                                      color: R.colorBlack,
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    CheckinPage(
+                                                              event:
+                                                                  listEvents[i]
+                                                                      .eventId,
+                                                            ),
+                                                          ));
+                                                    }),
+                                                IconButton(
+                                                    tooltip: "Update",
                                                     icon: Icon(
                                                       Icons.edit,
                                                       color: R.colorBlack,
                                                     ),
                                                     onPressed: () {
-                                                      // Navigator.push(
-                                                      //     context,
-                                                      //     MaterialPageRoute(
-                                                      //       builder: (context) =>
-                                                      //           EventInfoPage(),
-                                                      //     ));
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                EventInfoPage(
+                                                                    isUpdate:
+                                                                        true,
+                                                                    event:
+                                                                        listEvents[
+                                                                            i]),
+                                                          ));
                                                     }),
                                                 IconButton(
+                                                    tooltip:
+                                                        "Download file csv",
                                                     icon: Icon(
                                                       Icons.arrow_downward,
                                                       color: R.colorBlack,
                                                     ),
                                                     onPressed: () {}),
                                                 IconButton(
+                                                    tooltip: "Delete",
                                                     icon: Icon(
                                                       Icons.delete,
                                                       color: R.colorBlack,
@@ -185,9 +229,6 @@ class _EventPageState extends State<EventPage> {
                                                             return buildDeleteDialog(
                                                                 context, i);
                                                           });
-                                                      // print("List event i: " +
-                                                      //     listEvents[i]
-                                                      //         .eventId);
                                                     }),
                                               ],
                                             )
@@ -319,5 +360,36 @@ class _EventPageState extends State<EventPage> {
       ),
       duration: Duration(seconds: 4),
     ).show(context);
+  }
+
+  buildDeleteDialog(BuildContext context, int i) {
+    return AlertDialog(
+      backgroundColor: R.colorWhite,
+      contentTextStyle: R.textHeading3L,
+      elevation: 12,
+      titleTextStyle: R.textTitlePrimary,
+      actions: <Widget>[
+        new FlatButton(
+          child: new Text("Accept", style: R.textHeading3LPrimary),
+          onPressed: () async {
+            await Database().deleteEvent(listEvents[i].eventId);
+            Navigator.pop(context);
+            setState(() {});
+            List<Event> updatedResult = await Database().getEvents();
+            listEvents.clear();
+            listEvents = updatedResult;
+          },
+        ),
+        new FlatButton(
+            child: new Text(
+              "Cancel",
+              style: R.textHeading3LPrimary,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            })
+      ],
+      title: Text("Delete ${listEvents[i].name}?"),
+    );
   }
 }
