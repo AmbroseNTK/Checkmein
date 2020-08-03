@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:html';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:checkmein/customs/snackbar_custom.dart';
@@ -82,6 +81,9 @@ class ScanPageState extends State<ScanPage> {
         );
       }
     } catch (e) {
+      showSnackBar(
+          e,context
+        );
       print(e);
     }
   }
@@ -130,15 +132,20 @@ class ScanPageState extends State<ScanPage> {
                       ImageCapture capture = ImageCapture(
                           _webcamVideoElement.srcObject.getVideoTracks().first);
                       Blob blob = await capture.takePhoto();
-                      print(blob);
+                      
+                      print("Blob capture size 🌁 : ${blob.size}");
 
                       // FileSystem _filesystem = await window
-                      //     .requestFileSystem(1024 * 1024, persistent: false);
+                      //     .requestFileSystem(blob.size, persistent: false);
                       // FileEntry fileEntry =
                       //     await _filesystem.root.createFile('capture.png');
                       // FileWriter fw = await fileEntry.createWriter();
                       // fw.write(blob);
                       // var file = await fileEntry.file();
+                      
+
+                      // print("FileEntry : ${fileEntry.fullPath}");
+                      // print("FileEntry.file() : ${file.relativePath}");
                       // FileReader reader = FileReader();
                       // reader.readAsArrayBuffer(blob);
                       // print(reader.result.toString());
