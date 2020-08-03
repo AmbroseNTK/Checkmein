@@ -32,7 +32,7 @@ class LoginPageState extends PolyState<LoginPage> {
               width: 100.0,
             ),
             Text(
-              "Checkmein",
+              "Checkmein 1.0.3",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 60,
