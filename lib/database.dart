@@ -194,8 +194,8 @@ class Database {
     var characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     Random random = Random.secure();
-    String.fromCharCodes(Iterable.generate(characters.length,
-        (_) => characters.codeUnitAt(random.nextInt(characters.length))));
+    String.fromCharCodes(Iterable.generate(
+        10, (_) => characters.codeUnitAt(random.nextInt(characters.length))));
     return data;
   }
 }

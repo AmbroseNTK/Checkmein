@@ -35,11 +35,13 @@ class ScanPageState extends State<ScanPage> {
     _webcamWidget =
         HtmlElementView(key: UniqueKey(), viewType: 'webcamVideoElement');
 
-    window.navigator.getUserMedia(audio: false,
-        // video: true
-        video: {
-          // "facingMode": {"exact": "environment"}
-        }).then((MediaStream mediaStream) {
+    window.navigator
+        .getUserMedia(audio: false, video: true
+            // video: {
+            //   "facingMode": {"exact": "environment"}
+            // }
+            )
+        .then((MediaStream mediaStream) {
       _mediaStream = mediaStream;
       _webcamVideoElement.srcObject = mediaStream;
       // _webcamVideoElement.autoplay = true;
@@ -49,7 +51,7 @@ class ScanPageState extends State<ScanPage> {
     });
   }
 
-  Future<void> callQRDecodeAPI(Blob imgFile,BuildContext context) async {
+  Future<void> callQRDecodeAPI(Blob imgFile, BuildContext context) async {
     String qrDecodeEndPoint = "https://api.qrserver.com/v1/read-qr-code/";
     FileReader reader = FileReader();
     // print(Url.createObjectUrlFromBlob(imgFile));
@@ -62,7 +64,7 @@ class ScanPageState extends State<ScanPage> {
         'file': new dio.MultipartFile.fromBytes(reader.result,
             filename: "capture.png", contentType: new MediaType("image", "png"))
       });
-      var respone =  await new dio.Dio().post(qrDecodeEndPoint,
+      var respone = await new dio.Dio().post(qrDecodeEndPoint,
           data: formData,
           options: dio.Options(
             contentType: 'multipart/form-data',
@@ -73,19 +75,14 @@ class ScanPageState extends State<ScanPage> {
         print(respone.data);
 
         // DEBUG MODE
-        showSnackBar(
-          respone.data.toString(),context
-        );
-      }else{
-        showSnackBar(
-          "Fail to decode : "+respone.data.toString(),context
-        );
+        showSnackBar(respone.data.toString(), context);
+      } else {
+        showSnackBar("Fail to decode : " + respone.data.toString(), context);
       }
     } catch (e) {
-      print(e);
+      showSnackBar(e, context);
     }
   }
-
 
   void showSnackBar(String mess, BuildContext ctx) {
     Flushbar(
@@ -98,7 +95,6 @@ class ScanPageState extends State<ScanPage> {
       duration: Duration(seconds: 4),
     ).show(context);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +139,7 @@ class ScanPageState extends State<ScanPage> {
                       // reader.readAsArrayBuffer(blob);
                       // print(reader.result.toString());
 
-                      await callQRDecodeAPI(blob,context);
+                      await callQRDecodeAPI(blob, context);
                       // print("Done");
                     }
                   }
