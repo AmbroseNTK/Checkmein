@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:checkmein/customs/snackbar_custom.dart';
+import 'package:checkmein/database.dart';
 import 'package:checkmein/resources.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 // import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
@@ -23,6 +26,20 @@ class ScanPageState extends State<ScanPage> {
   VideoElement _webcamVideoElement;
   MediaStream _mediaStream;
 
+  StreamController<SCANING_STATE> streamControllerBuilderForScaning =
+      new StreamController();
+  Stream<SCANING_STATE> get _streamBuilderForScaning =>
+      streamControllerBuilderForScaning.stream;
+
+  ScanPageState() {}
+
+  @override
+  void dispose() {
+    streamControllerBuilderForScaning.sink.close();
+
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,11 +51,13 @@ class ScanPageState extends State<ScanPage> {
     _webcamWidget =
         HtmlElementView(key: UniqueKey(), viewType: 'webcamVideoElement');
 
-    window.navigator.getUserMedia(audio: false,
-        // video: true
-        video: {
-          // "facingMode": {"exact": "environment"}
-        }).then((MediaStream mediaStream) {
+    window.navigator
+        .getUserMedia(audio: false, video: true
+            // video: {
+            //   "facingMode": {"exact": "environment"}
+            // }
+            )
+        .then((MediaStream mediaStream) {
       _mediaStream = mediaStream;
       _webcamVideoElement.srcObject = mediaStream;
       // _webcamVideoElement.autoplay = true;
@@ -47,47 +66,6 @@ class ScanPageState extends State<ScanPage> {
       // }
     });
   }
-
-  Future<void> callQRDecodeAPI(Blob imgFile,BuildContext context) async {
-    String qrDecodeEndPoint = "https://api.qrserver.com/v1/read-qr-code/";
-    FileReader reader = FileReader();
-    // print(Url.createObjectUrlFromBlob(imgFile));
-    reader.readAsArrayBuffer(imgFile);
-
-    // Listen on event [BLOB] loaded into FileReade and then send it to QR DECODE API
-    await reader.onLoadEnd.firstWhere((element) => element.loaded > 0);
-    try {
-      dio.FormData formData = new dio.FormData.fromMap({
-        'file': new dio.MultipartFile.fromBytes(reader.result,
-            filename: "capture.png", contentType: new MediaType("image", "png"))
-      });
-      var respone =  await new dio.Dio().post(qrDecodeEndPoint,
-          data: formData,
-          options: dio.Options(
-            contentType: 'multipart/form-data',
-          ));
-
-      //[{type: qrcode, symbol: [{seq: 0, data: https://github.com/, error: null}]}]
-      if (respone.statusCode == 200) {
-        print(respone.data);
-
-        // DEBUG MODE
-        showSnackBar(
-          respone.data.toString(),context
-        );
-      }else{
-        showSnackBar(
-          "Fail to decode : "+respone.data.toString(),context
-        );
-      }
-    } catch (e) {
-      showSnackBar(
-          e,context
-        );
-      print(e);
-    }
-  }
-
 
   void showSnackBar(String mess, BuildContext ctx) {
     Flushbar(
@@ -101,6 +79,10 @@ class ScanPageState extends State<ScanPage> {
     ).show(context);
   }
 
+  final spinkit = SpinKitCubeGrid(
+    color: Colors.white,
+    size: 50.0,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +100,24 @@ class ScanPageState extends State<ScanPage> {
             Container(
               height: MediaQuery.of(context).size.height * 0.7,
               width: MediaQuery.of(context).size.height * 0.7,
-              child: _webcamWidget,
+              child: StreamBuilder<SCANING_STATE>(
+                stream: _streamBuilderForScaning,
+                initialData: SCANING_STATE.SCANING,
+                builder: (BuildContext context,
+                    AsyncSnapshot<SCANING_STATE> snapshot) {
+                  if (snapshot.data == SCANING_STATE.SCANING) {
+                    return spinkit;
+                  }
+                  if (snapshot.data == SCANING_STATE.SUCCESS) {
+                    return Container();
+                  }
+                  if (snapshot.data == SCANING_STATE.FAIL) {
+                    return _webcamWidget;
+                  }
+
+                  return Container();
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),
@@ -132,26 +131,8 @@ class ScanPageState extends State<ScanPage> {
                       ImageCapture capture = ImageCapture(
                           _webcamVideoElement.srcObject.getVideoTracks().first);
                       Blob blob = await capture.takePhoto();
-                      
+
                       print("Blob capture size 🌁 : ${blob.size}");
-
-                      // FileSystem _filesystem = await window
-                      //     .requestFileSystem(blob.size, persistent: false);
-                      // FileEntry fileEntry =
-                      //     await _filesystem.root.createFile('capture.png');
-                      // FileWriter fw = await fileEntry.createWriter();
-                      // fw.write(blob);
-                      // var file = await fileEntry.file();
-                      
-
-                      // print("FileEntry : ${fileEntry.fullPath}");
-                      // print("FileEntry.file() : ${file.relativePath}");
-                      // FileReader reader = FileReader();
-                      // reader.readAsArrayBuffer(blob);
-                      // print(reader.result.toString());
-
-                      await callQRDecodeAPI(blob,context);
-                      // print("Done");
                     }
                   }
                 },
@@ -165,3 +146,20 @@ class ScanPageState extends State<ScanPage> {
     );
   }
 }
+
+// FileSystem _filesystem = await window
+//     .requestFileSystem(blob.size, persistent: false);
+// FileEntry fileEntry =
+//     await _filesystem.root.createFile('capture.png');
+// FileWriter fw = await fileEntry.createWriter();
+// fw.write(blob);
+// var file = await fileEntry.file();
+
+// print("FileEntry : ${fileEntry.fullPath}");
+// print("FileEntry.file() : ${file.relativePath}");
+// FileReader reader = FileReader();
+// reader.readAsArrayBuffer(blob);
+// print(reader.result.toString());
+
+// await callQRDecodeAPI(blob, context);
+// print("Done");
