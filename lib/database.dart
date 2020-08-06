@@ -1,10 +1,13 @@
-import 'dart:html';
+import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
+import 'package:checkmein/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart' as dio;
 
 class Database {
   Firestore _firestore = Firestore.instance;
@@ -37,6 +40,7 @@ class Database {
                 location: event["location"],
                 duration: event["duration"],
                 startDay: event["startDay"],
+                eventQR: event["eventQR"],
                 participants: participants));
           }
         }
@@ -86,29 +90,32 @@ class Database {
     //_firestore = _firebaseAuthService.firestore;
   }
 
+  Future<User> getUserInfoCurrentTime() async {}
+
   Future<void> saveEvent(Event event) async {
     var usr = await _firebaseAuthService.firebaseAuth.currentUser();
-    var user = new User(
-        checkinTime: DateTime.now().millisecondsSinceEpoch,
-        email: usr.email,
-        displayName: usr.displayName,
-        photoURL: usr.photoUrl,
-        uid: null);
     var ref = await _firestore.collection("events").add({
       "ownerId": usr.uid,
       "name": event.name,
       "location": event.location,
       "duration": event.duration,
       "startDay": event.startDay,
+      // "eventQR":eventQRCode
     });
-    await _firestore.collection("users").document(usr.uid).updateData({
-      "events": FieldValue.arrayUnion([ref.documentID])
-    });
-    await ref.collection("participants").add({
-      "checkinTime": user.checkinTime,
-      "displayName": user.displayName,
-      "photoURL": user.photoURL,
-      "email": user.email
+
+    // Hmmmm after add to Firestore return a Ref to document use that to make a QR code 😅
+    var updateEventRefWithQRCode = await _firestore
+        .collection("events")
+        .document(ref.documentID)
+        .setData({"eventQR": ref.documentID}, merge: true);
+
+    await addToEnteredEvent(usr.uid, ref.documentID);
+  }
+
+  Future<void> addToEnteredEvent(String userUUID, String eventRef) async {
+    // Add user Entered Event to there LIST[]
+    await _firestore.collection("users").document(userUUID).updateData({
+      "events": FieldValue.arrayUnion([eventRef])
     });
   }
 
@@ -189,13 +196,93 @@ class Database {
     }
   }
 
-  String qrDataGenerator() {
-    String data;
-    var characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    Random random = Random.secure();
-    String.fromCharCodes(Iterable.generate(
-        10, (_) => characters.codeUnitAt(random.nextInt(characters.length))));
-    return data;
+  Future<void> createRoomQRCode(
+      {DocumentReference eventRef, String eventQR}) async {
+    var roomQRRef = await _firestore
+        .collection("roomQR")
+        .document(eventQR)
+        .setData({"eventID": eventRef.path});
+  }
+
+  Future<ENTER_EVENT_STATE> addUserToEvent(String eventRef) async {
+    var firebaseusr = await _firebaseAuthService.firebaseAuth.currentUser();
+    var user = new User(
+        checkinTime: DateTime.now().millisecondsSinceEpoch,
+        email: firebaseusr.email,
+        displayName: firebaseusr.displayName,
+        photoURL: firebaseusr.photoUrl,
+        uid: null);
+
+    var eventRefInfo =
+        await _firestore.collection("events").document(eventRef).get();
+    if (eventRefInfo.exists) {
+      var userParticipantsRef = _firestore
+          .collection("events")
+          .document(eventRef) // UUID of EVENT
+          .collection("participants")
+          .document(firebaseusr.uid);
+
+      // Finding  user already signed to the EVENT
+      var existsEntering = await userParticipantsRef.get();
+
+      if (existsEntering.exists) {
+        // EXITES USER in the EVENT
+        return ENTER_EVENT_STATE.EXISTED;
+      } else {
+        await userParticipantsRef.setData(user.toJson());
+        await addToEnteredEvent(firebaseusr.uid, eventRef);
+        return ENTER_EVENT_STATE.NEW;
+      }
+    }
+    return ENTER_EVENT_STATE.ERROR; // STAND FOR EVENT ID NOT FOUND
+  }
+
+  Future<Event> getEventInfo(String eventRef) async {
+    // Function getting Single Event
+    var querydata =
+        await _firestore.collection("events").document(eventRef).get();
+    if (querydata.exists) {
+      return Event.fromJson(querydata.data);
+    }
+    return null;
+  }
+
+  static Future<String> callQRDecodeAPI(html.Blob imgFile) async {
+    String qrDecodeEndPoint = "https://api.qrserver.com/v1/read-qr-code/";
+    RegExp qrCodeResult = new RegExp("[\n\s]*data:[\n\s]*(.*)[\n\s]*\,[\n\s]*",
+        caseSensitive: false);
+
+    html.FileReader reader = html.FileReader();
+    // print(Url.createObjectUrlFromBlob(imgFile));
+    reader.readAsArrayBuffer(imgFile);
+
+    // Listen on event [BLOB] loaded into FileReade and then send it to QR DECODE API
+    await reader.onLoadEnd.firstWhere((element) => element.loaded > 0);
+    try {
+      dio.FormData formData = new dio.FormData.fromMap({
+        'file': new dio.MultipartFile.fromBytes(reader.result,
+            filename: "capture.png", contentType: new MediaType("image", "png"))
+      });
+      var respone = await new dio.Dio().post(qrDecodeEndPoint,
+          data: formData,
+          options: dio.Options(
+            contentType: 'multipart/form-data',
+          ));
+      if (respone.statusCode == 200) {
+        print(respone.data);
+        print(respone.data.runtimeType);
+
+        // Hmm casting result
+        String decodeResult = (respone.data as List<dynamic>).join();
+        String parseData =
+            qrCodeResult.stringMatch(decodeResult).split(" ")[1].split(",")[0];
+        print(parseData);
+        return parseData;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }
