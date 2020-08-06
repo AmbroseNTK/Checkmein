@@ -32,7 +32,7 @@ class FirebaseAuthService {
   }
 
   Future<User> signInWithGoogle() async {
-    signOut();
+    await signOut();
     final googleUser = await _googleSignIn.signIn();
     final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.getCredential(
@@ -45,7 +45,8 @@ class FirebaseAuthService {
   }
 
   Future<void> signOut() async {
-    return _firebaseAuth.signOut();
+    await _googleSignIn.signOut();
+    await _firebaseAuth.signOut();
   }
 
   Future<User> currentUser() async {
