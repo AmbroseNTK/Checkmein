@@ -151,7 +151,7 @@ class _EventPageState extends State<EventPage> {
                                                                     CheckinPage(
                                                               event:
                                                                   listEvents[i]
-                                                                      .eventId,
+                                                                      .eventId,eventQR: listEvents[i].eventQR,
                                                             ),
                                                           ));
                                                     }),
