@@ -9,7 +9,8 @@ import '../database.dart';
 
 class CheckinPage extends StatefulWidget {
   final String event;
-  const CheckinPage({Key key, this.event}) : super(key: key);
+  final String eventQR;
+  const CheckinPage({Key key, this.event,this.eventQR}) : super(key: key);
   @override
   _CheckinPageState createState() => _CheckinPageState();
 }
@@ -100,7 +101,7 @@ class _CheckinPageState extends State<CheckinPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         QrImage(
-                          data: 'Hello World',
+                          data: widget.eventQR,
                           version: QrVersions.auto,
                           size: 320,
                           gapless: true,

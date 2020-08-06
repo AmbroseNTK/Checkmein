@@ -3,6 +3,7 @@ import 'package:checkmein/models/event.dart';
 import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/pages/menu.dart';
 import 'package:checkmein/resources.dart';
+import 'package:checkmein/utils.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -105,6 +106,9 @@ class _EventInfoPageState extends State<EventInfoPage> {
                   children: <Widget>[
                     TextFormField(
                       initialValue: eventName,
+                      onChanged: (value)=>{
+                        this.eventName = value
+                      },
                       onFieldSubmitted: (value) => eventName = value.trim(),
                       maxLength: 50,
                       keyboardType: TextInputType.text,
@@ -123,6 +127,9 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     TextFormField(
+                      onChanged: (value)=>{
+                        this.eventLocation = value
+                      },
                       initialValue: eventLocation,
                       onFieldSubmitted: (value) => eventLocation = value.trim(),
                       maxLength: 20,
@@ -142,6 +149,9 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     DateTimeField(
+                      onChanged: (value) {
+                        this.selectedDate = value;
+                      },
                       initialValue: selectedDate,
                       maxLength: 20,
                       keyboardType: TextInputType.datetime,
@@ -197,6 +207,9 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     TextFormField(
+                      onChanged: (value)=>{
+                        this.eventDuration = int.parse(value)
+                      },
                       initialValue: eventDuration.toString(),
                       onFieldSubmitted: (value) =>
                           eventDuration = int.parse(value),
@@ -237,8 +250,8 @@ class _EventInfoPageState extends State<EventInfoPage> {
                             ),
                             Padding(padding: EdgeInsets.only(right: 8.0)),
                             widget.isUpdate
-                                ? _buildUpdateButton(context)
-                                : _buildSaveButton(context),
+                                ? _buildUpdateButton()
+                                : _buildSaveButton(),
                           ],
                         ),
                       ),
@@ -253,18 +266,18 @@ class _EventInfoPageState extends State<EventInfoPage> {
     );
   }
 
-  RaisedButton _buildSaveButton(BuildContext context) {
+  RaisedButton _buildSaveButton() {
     return RaisedButton(
       color: R.colorPrimary,
       onPressed: () async {
         if (eventName == "") {
-          showSnackBar("Please enter event's name", context);
+          showSnackBar("Please enter event's name");
           return;
         } else if (eventLocation == "") {
-          showSnackBar("Please enter event's location", context);
+          showSnackBar("Please enter event's location");
           return;
         } else if (eventDuration == 0) {
-          showSnackBar("Please enter event's duration ", context);
+          showSnackBar("Please enter event's duration ");
           return;
         } else {
           try {
@@ -276,13 +289,14 @@ class _EventInfoPageState extends State<EventInfoPage> {
               startDay: selectedDate.millisecondsSinceEpoch,
             ))
                 .then((value) {
-              showSnackBar("$eventName was saved", context);
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/menu');
+              showSnackBar("$eventName was saved");
+              // Navigator.of(context).pop();
+              // // Navigator.
+              // Navigator.of(context).pushNamed('/menu');
             });
           } catch (e) {
             print(e);
-            showSnackBar("Failed to save $eventName", context);
+            showSnackBar("Failed to save $eventName");
           }
         }
       },
@@ -293,18 +307,18 @@ class _EventInfoPageState extends State<EventInfoPage> {
     );
   }
 
-  RaisedButton _buildUpdateButton(BuildContext context) {
+  RaisedButton _buildUpdateButton() {
     return RaisedButton(
       color: R.colorPrimary,
       onPressed: () async {
         if (eventName == "") {
-          showSnackBar("Please enter event's name", context);
+          showSnackBar("Please enter event's name");
           return;
         } else if (eventLocation == "") {
-          showSnackBar("Please enter event's location", context);
+          showSnackBar("Please enter event's location");
           return;
         } else if (eventDuration == 0) {
-          showSnackBar("Please enter event's duration ", context);
+          showSnackBar("Please enter event's duration ");
           return;
         } else {
           try {
@@ -317,15 +331,15 @@ class _EventInfoPageState extends State<EventInfoPage> {
                         name: eventName,
                         startDay: selectedDate.millisecondsSinceEpoch))
                 .then((value) {
-              showSnackBar("$eventName was updated", context);
-              if (Navigator.canPop(context)) {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed('/menu');
-              }
+              showSnackBar("$eventName was updated");
+              // if (Navigator.canPop(context)) {
+              //   Navigator.of(context).pop();
+              //   Navigator.of(context).pushNamed('/menu');
+              // }
             });
           } catch (e) {
             print(e);
-            showSnackBar("Failed to update $eventName", context);
+            showSnackBar("Failed to update $eventName");
           }
         }
       },
@@ -336,16 +350,32 @@ class _EventInfoPageState extends State<EventInfoPage> {
     );
   }
 
+  void navigatorGoBack(){
+    // Navigator.of(context).popUntil(ModalRoute.withName('/menu'));
+    // .popUntil(ModalRoute.withName('/menu'));
+  }
+
   DateTime selectedDate = DateTime.now();
-  void showSnackBar(String mess, BuildContext ctx) {
+  void showSnackBar(String mess) {
+    // navigatorGoBack();
     Flushbar(
+      onStatusChanged: (status) => {
+        if (FlushbarStatus.DISMISSED == status) {
+          Future.delayed(Duration(seconds: 1)).then((value) => {
+            Navigator.of(context).pop(),
+            Navigator.of(context).pop(),
+            // this.navigatorGoBack()
+          })
+        }
+      },
+      
       animationDuration: Duration(seconds: 1),
       message: mess,
       icon: Icon(
         Icons.info,
         color: R.colorPrimary,
       ),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
     ).show(context);
   }
 }
