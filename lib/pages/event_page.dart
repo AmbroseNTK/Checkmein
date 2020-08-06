@@ -6,6 +6,7 @@ import 'package:checkmein/models/user.dart';
 import 'package:checkmein/pages/checkin_page.dart';
 import 'package:checkmein/pages/event_info.dart';
 import 'package:checkmein/resources.dart';
+import 'package:checkmein/utils.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
@@ -165,6 +166,7 @@ class _EventPageState extends State<EventPage> {
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
+                                                            settings: RouteSettings(name: AppRouting.eventInfo),
                                                             builder: (context) =>
                                                                 EventInfoPage(
                                                                     isUpdate:
