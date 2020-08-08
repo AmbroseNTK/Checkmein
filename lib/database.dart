@@ -19,6 +19,8 @@ class Database {
     }
     return _cache;
   }
+
+  /// TODO IMPLEMENT CACHING
   Future<List<Event>> getEvents() async {
     List<Event> listEvents = List();
     var user = await _firebaseAuthService.firebaseAuth.currentUser();
