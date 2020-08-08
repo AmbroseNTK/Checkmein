@@ -14,7 +14,8 @@ import 'package:intl/intl.dart';
 class EventInfoPage extends StatefulWidget {
   final Event event;
   final bool isUpdate;
-  const EventInfoPage({Key key, this.event, this.isUpdate = false})
+  final Function callBackUpdateUI;
+  const EventInfoPage({Key key, this.event, this.isUpdate = false,this.callBackUpdateUI})
       : super(key: key);
   @override
   _EventInfoPageState createState() => _EventInfoPageState();
@@ -361,9 +362,9 @@ class _EventInfoPageState extends State<EventInfoPage> {
     Flushbar(
       onStatusChanged: (status) => {
         if (FlushbarStatus.DISMISSED == status) {
+          widget.callBackUpdateUI(),
           Future.delayed(Duration(seconds: 1)).then((value) => {
-            Navigator.of(context).pop(),
-            Navigator.of(context).pop(),
+            Navigator.of(context).popUntil(ModalRoute.withName(AppRouting.event))
             // this.navigatorGoBack()
           })
         }
