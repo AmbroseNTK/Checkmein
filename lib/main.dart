@@ -7,21 +7,29 @@ import 'package:checkmein/pages/menu.dart';
 // import 'package:checkmein/pages/qr_gen.dart';
 import 'package:checkmein/pages/scan.dart';
 import 'package:checkmein/resources.dart';
+import 'package:checkmein/utils.dart';
 import 'package:flutter/material.dart';
 
+final RouteObserver<Route> routeObserver = RouteObserver<Route>();
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MaterialApp(
-    theme: ThemeData(
-      primaryColor: R.colorPrimary,
-      accentColor: R.colorSecondary,
-    ),
-    home: LoginPage(),
-    debugShowCheckedModeBanner: false,
-    initialRoute: '/',
-    routes: <String, WidgetBuilder>{
-      '/menu': (BuildContext context) => MenuPage(),
-      '/event': (BuildContext context) => EventPage(),
-      '/event-info': (BuildContext context) => EventInfoPage(),
-    },
-  ));
+      theme: ThemeData(
+        primaryColor: R.colorPrimary,
+        accentColor: R.colorSecondary,
+      ),
+      debugShowCheckedModeBanner: false,
+      initialRoute: AppRouting.login,
+      routes: {
+        AppRouting.menu: (BuildContext context) => MenuPage(),
+        AppRouting.event: (BuildContext context) => EventPage(),
+        AppRouting.eventInfo: (BuildContext context) => EventInfoPage(),
+        AppRouting.login: (BuildContext context) => LoginPage(),
+        AppRouting.scan: (BuildContext context) => ScanPage(),
+      },
+      navigatorObservers: [
+        routeObserver
+      ]));
 }

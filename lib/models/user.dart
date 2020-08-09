@@ -27,4 +27,13 @@ class User {
   String get photoURL => _photoURL;
   int get checkinTime => _checkinTime;
   List<String> get event => _eventId;
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['checkinTime'] = this.checkinTime;
+    data['displayName'] = this.displayName;
+    data['photoURL'] = this.photoURL;
+    data['email'] = this.email;
+    return data;
+  }
 }

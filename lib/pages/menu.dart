@@ -1,6 +1,7 @@
 import 'package:checkmein/pages/event_page.dart';
 import 'package:checkmein/pages/scan.dart';
 import 'package:checkmein/resources.dart';
+import 'package:checkmein/utils.dart';
 import 'package:flutter/material.dart';
 
 class MenuPage extends StatefulWidget {
@@ -39,7 +40,9 @@ class MenuPageState extends State<MenuPage> {
         onPressed: () {
           Navigator.of(context).pop();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => EventPage()));
+              .push(MaterialPageRoute(
+                settings: RouteSettings(name:AppRouting.event),
+                builder: (context) => EventPage()));
         },
         icon: Image.asset(
           'assets/images/event.png',
@@ -65,7 +68,7 @@ class MenuPageState extends State<MenuPage> {
         onPressed: () {
           Navigator.of(context).pop();
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => ScanPage()));
+              .pushNamed(AppRouting.scan);
         },
         icon: Image.asset(
           'assets/images/view.png',

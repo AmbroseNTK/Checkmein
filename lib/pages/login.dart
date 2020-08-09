@@ -69,9 +69,7 @@ class LoginPageState extends PolyState<LoginPage> {
                     print(user.email);
                     if (user != null) {
                       // await Navigator.popAndPushNamed(context, '/menu');
-                      Navigator.pop(context);
-                      await Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => MenuPage()));
+                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
                     }
                   } catch (e) {
                     print(e.toString());
@@ -119,9 +117,8 @@ class LoginPageState extends PolyState<LoginPage> {
                   print(user.email);
                   if (user != null) {
                     // await Navigator.popAndPushNamed(context, '/menu');
-                    Navigator.pop(context);
-                    await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MenuPage()));
+                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
+
                   }
                 } catch (e) {
                   print(e);
@@ -183,9 +180,8 @@ class LoginPageState extends PolyState<LoginPage> {
                   print(user.email);
                   if (user != null) {
                     // await Navigator.popAndPushNamed(context, '/menu');
-                    Navigator.pop(context);
-                    await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MenuPage()));
+                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
+
                   }
                 } catch (e) {
                   print(e);
@@ -247,9 +243,8 @@ class LoginPageState extends PolyState<LoginPage> {
                   print(user.email);
                   if (user != null) {
                     // await Navigator.popAndPushNamed(context, '/menu');
-                    Navigator.pop(context);
-                    await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MenuPage()));
+                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
+
                   }
                 } catch (e) {
                   print(e);
