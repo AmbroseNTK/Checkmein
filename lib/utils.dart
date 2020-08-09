@@ -26,4 +26,7 @@ class AppRouting{
   static const event = '/event';
   static const eventInfo = '/event-info';
   static const login = '/login';
+    static const scan = '/scan';
+    static const checkin = '/checkin';
+
 }

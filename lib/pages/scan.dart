@@ -7,10 +7,10 @@ import 'package:checkmein/customs/snackbar_custom.dart';
 import 'package:checkmein/database.dart';
 import 'package:checkmein/resources.dart';
 import 'package:checkmein/utils.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:checkmein/models/event.dart';
+import 'dart:js' as js;
 
 class ScanPage extends StatefulWidget {
   @override
@@ -35,21 +35,25 @@ class ScanPageState extends State<ScanPage> {
 
   @override
   void dispose() {
-    streamControllerBuilderForScaning.sink.close();
-
     super.dispose();
+    print("SCAN DISPOSE");
+    streamControllerBuilderForScaning.sink.close();
+    turnOffCamera();
+    removeCameraElemnt();
   }
 
+  Key key = UniqueKey();
   @override
   void initState() {
     super.initState();
-    _webcamVideoElement = VideoElement();
-
+    print("SCAN INIT STAE");
+    _webcamVideoElement = new VideoElement();
+// ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(
         'webcamVideoElement', (int viewId) => _webcamVideoElement);
 
-    _webcamWidget =
-        HtmlElementView(key: UniqueKey(), viewType: 'webcamVideoElement');
+    _webcamWidget = HtmlElementView(key: key, viewType: 'webcamVideoElement');
+    document.body.append(_webcamVideoElement);
     rehookCamera(); // Handle reopen MediaStream and Capture
   }
 
@@ -62,24 +66,20 @@ class ScanPageState extends State<ScanPage> {
             )
         .then((MediaStream mediaStream) {
       _mediaStream = mediaStream;
+
       _webcamVideoElement.srcObject = mediaStream;
+      _webcamVideoElement.id = "WEBCAM";
+      _webcamVideoElement.className = "WEBCAMCLASS";
+
+      ; // _webcamVideoElement.on
       _webcamVideoElement.autoplay = true;
+      _webcamVideoElement.onPlay.capture((event) {
+        print("onPlay");
+      });
       // if (_webcamVideoElement.srcObject.active) {
       //   _webcamVideoElement.play();
       // }
     });
-  }
-
-  void showSnackBar(String mess, BuildContext ctx) {
-    Flushbar(
-      animationDuration: Duration(seconds: 1),
-      message: mess,
-      icon: Icon(
-        Icons.info,
-        color: R.colorPrimary,
-      ),
-      duration: Duration(seconds: 4),
-    ).show(context);
   }
 
   Widget spinkit(double rectSize) => SpinKitCubeGrid(
@@ -87,27 +87,66 @@ class ScanPageState extends State<ScanPage> {
         size: rectSize,
       );
 
+  Widget buildeventInfoCardTitile(Size size, String titleofState) {
+    return Container(
+      padding: EdgeInsets.all(15),
+      alignment: Alignment.topCenter,
+      width: double.infinity,
+      height: size.height * 0.1,
+      color: Colors.greenAccent,
+      child: Align(
+        alignment: Alignment.center,
+        child: Text(titleofState,
+            style: TextStyle(
+                fontFamily: 'FiraSans',
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  Widget eventInfoCardContent(Event eventInfo, Size size) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        height: size.height * 0.4,
+        width: size.width * 0.8,
+        child: Align(
+          alignment: Alignment.center,
+          child: Column(
+            // crossAxisAlignment: Cro,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Event Name : " + eventInfo.name, style: R.textHeading3L),
+              Text("Event Location : " + eventInfo.location,
+                  style: R.textHeading3L),
+              Text("Time : " +
+                  DateTime.fromMillisecondsSinceEpoch(eventInfo.startDay)
+                      .toString())
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget eventInfoCard(
       {Event eventInfo, ENTER_EVENT_STATE eventState, Size size}) {
     return Card(
       child: Container(
         width: size.width * 0.35,
         height: size.width * 0.35,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        // color: Colors.blue ,
+        child: Stack(
+          // mainAxisAlignment: MainAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             eventState == ENTER_EVENT_STATE.NEW
-                ? Text(
-                    "Sussesfully",
-                    style: TextStyle(
-                        fontFamily: 'FiraSans',
-                        fontSize: 19,
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold),
-                  )
-                : Text("Already Attended"),
-            Text(eventInfo.name, style: R.textHeading3L)
+                ? buildeventInfoCardTitile(size, "Sussesfully")
+                : buildeventInfoCardTitile(size, "Already Attended"),
+            eventInfoCardContent(eventInfo, size)
           ],
         ),
       ),
@@ -119,6 +158,23 @@ class ScanPageState extends State<ScanPage> {
     Size mediaquery = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: R.colorPrimary,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: R.colorPrimary,
+        leading: Padding(
+          padding: const EdgeInsets.fromLTRB(8.0, 0, 5.0, 0),
+          child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(AppRouting.menu);
+              }),
+        ),
+        title: Text(
+          'Checkmein',
+          style: R.textHeadingWhite,
+        ),
+      ),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -132,12 +188,13 @@ class ScanPageState extends State<ScanPage> {
               height: MediaQuery.of(context).size.height * 0.7,
               width: MediaQuery.of(context).size.height * 0.7,
               child: StreamBuilder<SCANING_STATE>(
-                stream: _streamBuilderForScaning,
+                stream: _streamBuilderForScaning, // Reactive changing UI
                 initialData: SCANING_STATE.FAIL,
                 builder: (BuildContext context,
                     AsyncSnapshot<SCANING_STATE> snapshot) {
                   print("Call StreamBuilder" + snapshot.data.toString());
                   if (snapshot.data == SCANING_STATE.SCANING) {
+                    this.hideCamera(true);
                     return spinkit(mediaquery.width * 0.35);
                   }
                   if (snapshot.data == SCANING_STATE.SUCCESS) {
@@ -153,8 +210,9 @@ class ScanPageState extends State<ScanPage> {
                         size: mediaquery);
                   }
                   if (snapshot.data == SCANING_STATE.FAIL) {
-                    rehookCamera();
-                    return _webcamWidget;
+                    // this.hideCamera(false);
+                    // rehookCamera();
+                    return Container();
                   }
 
                   return Container();
@@ -165,9 +223,10 @@ class ScanPageState extends State<ScanPage> {
               padding: const EdgeInsets.all(5.0),
               child: FloatingActionButton(
                 onPressed: () async {
-                  // _webcamVideoElement.srcObject.active
-                  //     ? _webcamVideoElement.play()
-                  //     : _webcamVideoElement.pause();
+                  _webcamVideoElement.srcObject.active
+                      ? _webcamVideoElement.play()
+                      : _webcamVideoElement.pause();
+                  this.hideCamera(true);
                   if (_webcamVideoElement.srcObject != null) {
                     if (_webcamVideoElement.srcObject.active) {
                       ImageCapture capture = ImageCapture(
@@ -175,8 +234,7 @@ class ScanPageState extends State<ScanPage> {
                       Blob blob = await capture.takePhoto();
 
                       print("Blob capture size 🌁 : ${blob.size}");
-                      streamControllerBuilderForScaning.sink
-                          .add(SCANING_STATE.SCANING);
+                      this.changeScanFlag(SCANING_STATE.SCANING);
                       this.turnOffCamera();
 
                       String qrDecode = await Database.callQRDecodeAPI(blob);
@@ -188,14 +246,10 @@ class ScanPageState extends State<ScanPage> {
 
                         // Handle UI EVENT ID NOT FOUND
                         if (eventEnterResult == ENTER_EVENT_STATE.ERROR) {
-                          var dialogResult = await showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return buildAlertDialog(
-                                    "Error", ["Event not found"], "Rescan");
-                              });
-                          print(dialogResult);
-                          this.changeScanFlag(SCANING_STATE.FAIL);
+                          _confirmDialog(
+                              title: "Error",
+                              content: "Unable to find Event",
+                              lowerContent: "Please Rescan");
                         } else {
                           // BEGIN TO FIND EVENT
                           _eventInfo =
@@ -215,9 +269,13 @@ class ScanPageState extends State<ScanPage> {
                           }
                         }
                       } else {
-                        // this.changeScanFlag(SCANING_STATE.FAIL);
-                        print("NULL WHEN CALL API");
-                        _confirmDialog();
+                        this.hideCamera(false);
+                        // Unable to locate QR code in the picture ( server respone with null )
+                        print("NO QR in PICTURE");
+                        _confirmDialog(
+                            title: "Error",
+                            content: "Unable to find QRCode",
+                            lowerContent: "Please Rescan");
                       }
                     }
                   }
@@ -232,12 +290,21 @@ class ScanPageState extends State<ScanPage> {
     );
   }
 
+  void hideCamera(bool cameraToggleHide) {
+    _webcamVideoElement.style.zIndex = cameraToggleHide == true ? "-1" : "1";
+  }
+
+  void removeCameraElemnt() {
+    _webcamVideoElement?.remove();
+  }
+
   void turnOffCamera() {
     // if (_mediaStream.active) {
-    // _mediaStream.getTracks().forEach((element) {
-    //   element.stop();
-    // });
-    _mediaStream.getTracks()[0].stop();
+    _mediaStream.getTracks().forEach((track) {
+      track.stop();
+      _webcamVideoElement.srcObject.removeTrack(track);
+    });
+    // _mediaStream.getTracks()[0].stop();
     // }
   }
 
@@ -266,16 +333,18 @@ class ScanPageState extends State<ScanPage> {
     );
   }
 
-  Future<void> _confirmDialog() async {
+  Future<void> _confirmDialog(
+      {String title, String content, String lowerContent}) async {
+    this.hideCamera(true);
     switch (await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-              title: Text('Error', style: R.textTitleL),
+              title: Text(title, style: R.textTitleL),
               contentPadding: const EdgeInsets.fromLTRB(24.0, 5.0, 24.0, 24.0),
               children: <Widget>[
                 Text(
-                  "Unable to find QRCode",
+                  content,
                   style: TextStyle(
                       fontFamily: 'FiraSans',
                       fontSize: 13,
@@ -283,7 +352,7 @@ class ScanPageState extends State<ScanPage> {
                       fontWeight: FontWeight.normal),
                 ),
                 Text(
-                  "Please Rescan",
+                  lowerContent,
                   style: TextStyle(
                       fontFamily: 'FiraSans',
                       fontSize: 10,
@@ -308,6 +377,8 @@ class ScanPageState extends State<ScanPage> {
               ]);
         })) {
       case true:
+        this.hideCamera(false);
+        this.rehookCamera();
         this.changeScanFlag(SCANING_STATE.FAIL);
         print('Confirmed');
         break;
@@ -317,6 +388,8 @@ class ScanPageState extends State<ScanPage> {
         break;
 
       default:
+        this.hideCamera(false);
+        this.rehookCamera();
         this.changeScanFlag(SCANING_STATE.FAIL);
         print('Canceled');
     }
