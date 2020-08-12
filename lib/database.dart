@@ -5,6 +5,7 @@ import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
 import 'package:checkmein/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart' as dio;
 
@@ -85,6 +86,53 @@ class Database {
     }
     return result;
   }
+
+  void getParticipantsByEventIdWithCallback(
+      String eventId, Function(List<User>) callback) {
+    _firestore
+        .collection('events')
+        .document(eventId)
+        .collection("participants")
+        .orderBy("checkinTime", descending: true)
+        .snapshots()
+        .listen((event) {
+      var result = List<User>();
+      for (var i = 0; i < event.documents.length; i++) {
+        var userInfo = event.documents[i];
+        if (userInfo.exists) {
+          result.add(new User(
+              uid: userInfo.documentID,
+              displayName: userInfo.data["displayName"],
+              email: userInfo.data["email"],
+              photoURL: userInfo.data["photoURL"],
+              checkinTime: userInfo.data["checkinTime"]));
+        }
+      }
+      callback(result);
+    });
+  }
+  // return new Future<List<User>>.value(() {
+  //   return result;
+  // });
+
+  // try {
+  //   // var participants = await _firestore
+  //   //     .collection("events")
+  //   //     .document(eventId)
+  //   //     .collection("participants")
+  //   //     .getDocuments();
+
+  //   _firestore
+  //       .collection('events')
+  //       .document(eventId)
+  //       .collection("participants")
+  //       .getDocuments()
+  //       .asStream()
+  //       .listen((event) {});
+  // } catch (e) {
+  //   return null;
+  // }
+  // return result;
 
   Database._internal() {
     _firebaseAuthService = FirebaseAuthService();

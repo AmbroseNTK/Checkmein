@@ -10,7 +10,7 @@ import '../database.dart';
 class CheckinPage extends StatefulWidget {
   final String event;
   final String eventQR;
-  const CheckinPage({Key key, this.event,this.eventQR}) : super(key: key);
+  const CheckinPage({Key key, this.event, this.eventQR}) : super(key: key);
   @override
   _CheckinPageState createState() => _CheckinPageState();
 }
@@ -20,10 +20,11 @@ class _CheckinPageState extends State<CheckinPage> {
   List<User> listUsers = List();
 
   Future<void> loadData() async {
-    var result = await Database().getParticipantsByEventId(widget.event);
-    setState(() {
-      listUsers.clear();
-      listUsers.addAll(result);
+    Database().getParticipantsByEventIdWithCallback(widget.event, (result) {
+      setState(() {
+        listUsers.clear();
+        listUsers.addAll(result);
+      });
     });
   }
 
