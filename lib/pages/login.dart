@@ -32,7 +32,7 @@ class LoginPageState extends PolyState<LoginPage> {
               width: 100.0,
             ),
             Text(
-              "Checkmein 1.0.3",
+              "Checkmein",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 60,
@@ -117,8 +117,7 @@ class LoginPageState extends PolyState<LoginPage> {
                   print(user.email);
                   if (user != null) {
                     // await Navigator.popAndPushNamed(context, '/menu');
-                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
-
+                    Navigator.of(context).popAndPushNamed(AppRouting.menu);
                   }
                 } catch (e) {
                   print(e);
@@ -180,8 +179,7 @@ class LoginPageState extends PolyState<LoginPage> {
                   print(user.email);
                   if (user != null) {
                     // await Navigator.popAndPushNamed(context, '/menu');
-                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
-
+                    Navigator.of(context).popAndPushNamed(AppRouting.menu);
                   }
                 } catch (e) {
                   print(e);
@@ -243,8 +241,7 @@ class LoginPageState extends PolyState<LoginPage> {
                   print(user.email);
                   if (user != null) {
                     // await Navigator.popAndPushNamed(context, '/menu');
-                      Navigator.of(context).popAndPushNamed(AppRouting.menu);
-
+                    Navigator.of(context).popAndPushNamed(AppRouting.menu);
                   }
                 } catch (e) {
                   print(e);

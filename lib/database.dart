@@ -1,6 +1,5 @@
 import 'dart:html' as html;
-import 'dart:math';
-
+import 'package:csv/csv.dart';
 import 'package:checkmein/models/event.dart';
 import 'package:checkmein/models/user.dart';
 import 'package:checkmein/signin_service.dart';
@@ -285,6 +284,28 @@ class Database {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future downloadFileCSV(String eventId) async {
+    List<List<dynamic>> rows = List<List<dynamic>>();
+
+    var cloud = await getParticipantsByEventId(eventId);
+    rows.add(["Email", "Display Name", "Check in Time"]);
+    if (cloud != null) {
+      for (int i = 0; i < cloud.length; i++) {
+        List<dynamic> row = List<dynamic>();
+        row.add(cloud[i].email);
+        row.add(cloud[i].displayName);
+        row.add(new DateTime.fromMillisecondsSinceEpoch(cloud[i].checkinTime));
+        rows.add(row);
+      }
+      // File f = html.File(rows, "$eventId.csv");
+      String csv = const ListToCsvConverter().convert(rows);
+      String encodedFileContents = Uri.encodeComponent(csv);
+      new html.AnchorElement(href: "data:text, $encodedFileContents")
+        ..setAttribute("download", "Report.csv")
+        ..click();
     }
   }
 }

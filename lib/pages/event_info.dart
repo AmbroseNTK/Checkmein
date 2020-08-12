@@ -15,7 +15,8 @@ class EventInfoPage extends StatefulWidget {
   final Event event;
   final bool isUpdate;
   final Function callBackUpdateUI;
-  const EventInfoPage({Key key, this.event, this.isUpdate = false,this.callBackUpdateUI})
+  const EventInfoPage(
+      {Key key, this.event, this.isUpdate = false, this.callBackUpdateUI})
       : super(key: key);
   @override
   _EventInfoPageState createState() => _EventInfoPageState();
@@ -67,21 +68,21 @@ class _EventInfoPageState extends State<EventInfoPage> {
           child: Image.asset('assets/images/event.png', width: 25.0),
         ),
         actions: [
-          FlatButton.icon(
-              label: Text(
-                "Check-in",
-                style: R.textHeadingWhite,
-              ),
-              icon: Icon(
-                Icons.check_circle,
-                color: R.colorWhite,
-              ),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return CheckinPage();
-                }));
-              })
+          // FlatButton.icon(
+          //     label: Text(
+          //       "Check-in",
+          //       style: R.textHeadingWhite,
+          //     ),
+          //     icon: Icon(
+          //       Icons.check_circle,
+          //       color: R.colorWhite,
+          //     ),
+          //     onPressed: () {
+          //       Navigator.of(context)
+          //           .push(MaterialPageRoute(builder: (context) {
+          //         return CheckinPage();
+          //       }));
+          //     })
         ],
       ),
       body: Stack(
@@ -107,9 +108,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                   children: <Widget>[
                     TextFormField(
                       initialValue: eventName,
-                      onChanged: (value)=>{
-                        this.eventName = value
-                      },
+                      onChanged: (value) => {this.eventName = value},
                       onFieldSubmitted: (value) => eventName = value.trim(),
                       maxLength: 50,
                       keyboardType: TextInputType.text,
@@ -128,9 +127,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     TextFormField(
-                      onChanged: (value)=>{
-                        this.eventLocation = value
-                      },
+                      onChanged: (value) => {this.eventLocation = value},
                       initialValue: eventLocation,
                       onFieldSubmitted: (value) => eventLocation = value.trim(),
                       maxLength: 20,
@@ -208,9 +205,8 @@ class _EventInfoPageState extends State<EventInfoPage> {
                     ),
                     sizedBoxspace,
                     TextFormField(
-                      onChanged: (value)=>{
-                        this.eventDuration = int.parse(value)
-                      },
+                      onChanged: (value) =>
+                          {this.eventDuration = int.parse(value)},
                       initialValue: eventDuration.toString(),
                       onFieldSubmitted: (value) =>
                           eventDuration = int.parse(value),
@@ -351,7 +347,7 @@ class _EventInfoPageState extends State<EventInfoPage> {
     );
   }
 
-  void navigatorGoBack(){
+  void navigatorGoBack() {
     // Navigator.of(context).popUntil(ModalRoute.withName('/menu'));
     // .popUntil(ModalRoute.withName('/menu'));
   }
@@ -361,15 +357,16 @@ class _EventInfoPageState extends State<EventInfoPage> {
     // navigatorGoBack();
     Flushbar(
       onStatusChanged: (status) => {
-        if (FlushbarStatus.DISMISSED == status) {
-          widget.callBackUpdateUI(),
-          Future.delayed(Duration(seconds: 1)).then((value) => {
-            Navigator.of(context).popUntil(ModalRoute.withName(AppRouting.event))
-            // this.navigatorGoBack()
-          })
-        }
+        if (FlushbarStatus.DISMISSED == status)
+          {
+            widget.callBackUpdateUI(),
+            Future.delayed(Duration(seconds: 1)).then((value) => {
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName(AppRouting.event))
+                  // this.navigatorGoBack()
+                })
+          }
       },
-      
       animationDuration: Duration(seconds: 1),
       message: mess,
       icon: Icon(

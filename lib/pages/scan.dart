@@ -58,13 +58,11 @@ class ScanPageState extends State<ScanPage> {
   }
 
   void rehookCamera() {
-    window.navigator
-        .getUserMedia(audio: false, video: true
-            // video: {
-            //   "facingMode": {"exact": "environment"}
-            // }
-            )
-        .then((MediaStream mediaStream) {
+    window.navigator.getUserMedia(audio: false,
+        // video: true
+        video: {
+          "facingMode": {"exact": "environment"}
+        }).then((MediaStream mediaStream) {
       _mediaStream = mediaStream;
 
       _webcamVideoElement.srcObject = mediaStream;

@@ -52,10 +52,8 @@ class _EventPageState extends State<EventPage> {
     });
   }
 
-  void deleteCardAction(){
-    setState(() {
-      
-    });
+  void deleteCardAction() {
+    setState(() {});
   }
 
   @override
@@ -229,7 +227,13 @@ class _EventPageState extends State<EventPage> {
                                                                 .arrow_downward,
                                                             color: R.colorBlack,
                                                           ),
-                                                          onPressed: () {}),
+                                                          onPressed: () async {
+                                                            await Database()
+                                                                .downloadFileCSV(
+                                                                    listEvents[
+                                                                            i]
+                                                                        .eventId);
+                                                          }),
                                                       IconButton(
                                                           tooltip: "Delete",
                                                           icon: Icon(
